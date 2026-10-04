@@ -32,6 +32,7 @@ app.include_router(router, prefix="/api/v1")
 
 # Serve the React frontend from /  so the whole app runs on one port (8000)
 _frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+_product_site_dir = os.path.join(_frontend_dir, "product-site-dist")
 if os.path.isdir(_frontend_dir):
     # app.jsx must be served with correct MIME type for Babel
     @app.get("/app.jsx")
@@ -44,6 +45,17 @@ if os.path.isdir(_frontend_dir):
 
     @app.get("/")
     async def serve_index():
+        product_site_index = os.path.join(_product_site_dir, "index.html")
+        index_path = product_site_index if os.path.isfile(product_site_index) else os.path.join(_frontend_dir, "index.html")
+        return FileResponse(
+            index_path,
+            media_type="text/html",
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache"},
+        )
+
+    @app.get("/dashboard")
+    @app.get("/dashboard/")
+    async def serve_dashboard():
         return FileResponse(
             os.path.join(_frontend_dir, "index.html"),
             media_type="text/html",
@@ -52,3 +64,6 @@ if os.path.isdir(_frontend_dir):
 
     # Serve everything else in /frontend as static
     app.mount("/static", StaticFiles(directory=_frontend_dir), name="frontend")
+
+    if os.path.isdir(_product_site_dir):
+        app.mount("/", StaticFiles(directory=_product_site_dir, html=True), name="product-site")

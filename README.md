@@ -47,8 +47,10 @@ MDM_SMETwin/
 │       ├── 0001_initial_schema.py
 │       └── 0002_add_optimization_results.py
 ├── frontend/
-│   ├── index.html                 # CDN shell (React + Recharts + Tailwind)
-│   └── app.jsx                    # Full single-file React app (Babel standalone)
+│   ├── product-site/              # Replit product website source (Vite + React + Tailwind)
+│   ├── product-site-dist/         # Built assets served by FastAPI at /
+│   ├── index.html                 # Existing CDN dashboard served at /dashboard
+│   └── app.jsx                    # Dashboard source (Babel standalone)
 ├── tests/
 │   └── test_optimization.py
 ├── .env.example
@@ -114,15 +116,16 @@ createdb sme_twin
 
 API docs available at: **http://localhost:8000/docs**
 
-### 6. Open the Frontend
+### 6. Build and Open the Frontend
 
+Build the product website once from the project root:
+
+```bash
+npm install --prefix frontend/product-site
+npm run build --prefix frontend/product-site
 ```
-frontend/index.html
-```
 
-Open it directly in your browser, or use **VS Code Live Server** (right-click → Open with Live Server).
-
-The app works fully offline with mock data — no backend connection required for demos.
+Then start the backend and open **http://localhost:8000/** for the product website. The existing dashboard remains available at **http://localhost:8000/dashboard**. The standalone `frontend/index.html` remains available for the dashboard's CDN-based demo mode.
 
 ---
 
