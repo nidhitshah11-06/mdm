@@ -13,6 +13,7 @@ class FactoryCreate(BaseModel):
     name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
     sector: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)]
     phone_number: PhoneNumber
+    udyam_number: str | None = None
 
 
 class FactoryResponse(FactoryCreate):
@@ -76,3 +77,43 @@ class SupervisorNotificationResponse(BaseModel):
     call_sid: str
     whatsapp_sid: str | None = None
     whatsapp_error: str | None = None
+
+
+class MachineCreate(BaseModel):
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
+    rated_kw: Annotated[float, Field(gt=0, le=100_000)]
+    process_type: ProcessType = ProcessType.SHIFTABLE
+    max_daily_hours: Annotated[float, Field(gt=0, le=24)] = 24.0
+
+
+class MachineResponse(MachineDTO):
+    model_config = ConfigDict(from_attributes=True)
+    factory_id: UUID
+
+
+class OptimizationResultResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    factory_id: UUID
+    hourly_schedule: dict[str, list[int]]
+    optimized_daily_cost: float
+    baseline_daily_cost: float
+    estimated_daily_savings: float
+    savings_percent: float
+    peak_capacity_kw: float
+    created_at: datetime
+
+
+class ClusterBenchmarkItem(BaseModel):
+    id: str
+    sec_kwh_per_unit: float
+    sector: str
+    monthly_kwh: float
+    is_current_factory: bool
+
+
+class FactoryDetailResponse(FactoryResponse):
+    machines: list[MachineResponse] = []
+    latest_bill: BillResponse | None = None
+    latest_calibration: CalibrationResponse | None = None

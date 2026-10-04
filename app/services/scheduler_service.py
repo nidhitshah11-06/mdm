@@ -127,7 +127,7 @@ def optimize_shift_schedule(
             ) <= peak_demand_capacity_kw
         return model, model_variables
 
-    solver = pulp.COIN_CMD(msg=False)
+    solver = pulp.PULP_CBC_CMD(msg=False) if pulp.PULP_CBC_CMD().available() else pulp.COIN_CMD(msg=False)
     optimized_model, optimized_variables = build_model("sme_twin_cost_min", minimize_cost=True)
     baseline_model, baseline_variables = build_model("sme_twin_earliest_feasible", minimize_cost=False)
     if optimized_model.solve(solver) != pulp.LpStatusOptimal:

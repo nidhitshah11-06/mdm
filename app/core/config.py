@@ -15,14 +15,20 @@ class Settings(BaseSettings):
 
     app_name: str = "SME-Twin"
     environment: str = "development"
+    frontend_port: int = 5173
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/sme_twin"
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
+    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5500"])
     gemini_api_key: SecretStr | None = None
     gemini_model: str = "gemini-1.5-flash"
     twilio_account_sid: str | None = None
     twilio_auth_token: SecretStr | None = None
     twilio_from_phone: str | None = None
     twilio_whatsapp_from: str = "whatsapp:+14155238886"
+
+    @property
+    def twilio_whatsapp_from_normalized(self) -> str:
+        """Strip spaces from the WhatsApp number (common copy-paste issue)."""
+        return self.twilio_whatsapp_from.replace(" ", "")
     max_upload_bytes: Annotated[int, Field(gt=0)] = 10 * 1024 * 1024
     peak_demand_power_factor: Annotated[float, Field(gt=0, le=1)] = 0.9
 

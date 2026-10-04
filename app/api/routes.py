@@ -11,19 +11,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.models.schema import Bill, CalibrationLog, Factory, Machine, ProcessType
+from app.models.schema import Bill, CalibrationLog, Factory, Machine, OptimizationResult, ProcessType
 from app.schemas.pydantic_schemas import (
     BillResponse,
     CalibratedMachineDTO,
     CalibrationResponse,
+    ClusterBenchmarkItem,
     FactoryCreate,
+    FactoryDetailResponse,
     FactoryResponse,
+    MachineCreate,
     MachineDTO,
+    MachineResponse,
+    OptimizationResultResponse,
     ScheduleResponse,
     SupervisorNotificationRequest,
     SupervisorNotificationResponse,
 )
+from app.services.benchmark_service import generate_cluster_benchmark
 from app.services.calibration_engine import calibrate_factory_twin
+from app.services.compliance_service import generate_dpr
 from app.services.notification_service import send_whatsapp_alert, trigger_supervisor_voice_call
 from app.services.ocr_service import parse_utility_bill
 from app.services.scheduler_service import optimize_shift_schedule
@@ -199,6 +206,18 @@ async def optimize_factory(factory_id: UUID, db: Database) -> ScheduleResponse:
         logger.exception("MILP solver failed for factory %s", factory_id)
         raise HTTPException(status_code=503, detail="Scheduling solver is unavailable") from exc
 
+    opt_result = OptimizationResult(
+        factory_id=factory_id,
+        hourly_schedule=schedule.hourly_schedule,
+        optimized_daily_cost=schedule.optimized_daily_cost,
+        baseline_daily_cost=schedule.baseline_daily_cost,
+        estimated_daily_savings=schedule.estimated_daily_savings,
+        savings_percent=schedule.savings_percent,
+        peak_capacity_kw=bill.peak_demand_kva * settings.peak_demand_power_factor,
+    )
+    db.add(opt_result)
+    await db.commit()
+
     return ScheduleResponse(
         factory_id=factory_id,
         hourly_schedule=schedule.hourly_schedule,
@@ -241,3 +260,172 @@ async def notify_supervisor(
         whatsapp_sid=whatsapp_sid,
         whatsapp_error=whatsapp_error,
     )
+
+
+@router.get("/factory", response_model=list[FactoryResponse])
+async def list_factories(db: Database) -> list[Factory]:
+    result = await db.execute(select(Factory).order_by(Factory.created_at.desc()))
+    return result.scalars().all()
+
+
+@router.get("/factory/{factory_id}", response_model=FactoryDetailResponse)
+async def get_factory(factory_id: UUID, db: Database):
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(
+        select(Factory).options(selectinload(Factory.machines)).where(Factory.id == factory_id)
+    )
+    factory = result.scalar_one_or_none()
+    if factory is None:
+        raise HTTPException(status_code=404, detail="Factory not found")
+    latest_bill = await _latest_bill(db, factory_id)
+    cal_result = await db.execute(
+        select(CalibrationLog)
+        .where(CalibrationLog.factory_id == factory_id)
+        .order_by(CalibrationLog.timestamp.desc())
+        .limit(1)
+    )
+    latest_calibration = cal_result.scalar_one_or_none()
+    return FactoryDetailResponse(
+        id=factory.id,
+        name=factory.name,
+        sector=factory.sector,
+        phone_number=factory.phone_number,
+        udyam_number=factory.udyam_number,
+        created_at=factory.created_at,
+        machines=[
+            MachineResponse(
+                id=m.id,
+                factory_id=m.factory_id,
+                name=m.name,
+                rated_kw=m.rated_kw,
+                process_type=m.process_type,
+                max_daily_hours=m.max_daily_hours,
+            )
+            for m in factory.machines
+        ],
+        latest_bill=BillResponse.model_validate(latest_bill) if latest_bill else None,
+        latest_calibration=CalibrationResponse(
+            factory_id=latest_calibration.factory_id,
+            calibrated_duty_cycles=latest_calibration.calibrated_duty_cycles,
+            simulation_error_pct=latest_calibration.simulation_error_pct,
+            timestamp=latest_calibration.timestamp,
+        ) if latest_calibration else None,
+    )
+
+
+@router.get("/factory/{factory_id}/machines", response_model=list[MachineResponse])
+async def list_machines(factory_id: UUID, db: Database):
+    factory = await db.get(Factory, factory_id)
+    if factory is None:
+        raise HTTPException(status_code=404, detail="Factory not found")
+    result = await db.execute(
+        select(Machine).where(Machine.factory_id == factory_id).order_by(Machine.name)
+    )
+    return [
+        MachineResponse(
+            id=m.id,
+            factory_id=m.factory_id,
+            name=m.name,
+            rated_kw=m.rated_kw,
+            process_type=m.process_type,
+            max_daily_hours=m.max_daily_hours,
+        )
+        for m in result.scalars().all()
+    ]
+
+
+@router.post("/factory/{factory_id}/machines", response_model=MachineResponse, status_code=status.HTTP_201_CREATED)
+async def add_machine(factory_id: UUID, payload: MachineCreate, db: Database):
+    factory = await db.get(Factory, factory_id)
+    if factory is None:
+        raise HTTPException(status_code=404, detail="Factory not found")
+    machine = Machine(factory_id=factory_id, **payload.model_dump())
+    db.add(machine)
+    await db.commit()
+    await db.refresh(machine)
+    return MachineResponse(
+        id=machine.id,
+        factory_id=machine.factory_id,
+        name=machine.name,
+        rated_kw=machine.rated_kw,
+        process_type=machine.process_type,
+        max_daily_hours=machine.max_daily_hours,
+    )
+
+
+@router.get("/factory/{factory_id}/bills", response_model=list[BillResponse])
+async def list_bills(factory_id: UUID, db: Database):
+    factory = await db.get(Factory, factory_id)
+    if factory is None:
+        raise HTTPException(status_code=404, detail="Factory not found")
+    result = await db.execute(
+        select(Bill)
+        .where(Bill.factory_id == factory_id)
+        .order_by(Bill.billing_month.desc(), Bill.id.desc())
+    )
+    return result.scalars().all()
+
+
+@router.get("/factory/{factory_id}/calibration", response_model=CalibrationResponse)
+async def get_latest_calibration(factory_id: UUID, db: Database):
+    factory = await db.get(Factory, factory_id)
+    if factory is None:
+        raise HTTPException(status_code=404, detail="Factory not found")
+    result = await db.execute(
+        select(CalibrationLog)
+        .where(CalibrationLog.factory_id == factory_id)
+        .order_by(CalibrationLog.timestamp.desc())
+        .limit(1)
+    )
+    calibration = result.scalar_one_or_none()
+    if calibration is None:
+        raise HTTPException(status_code=404, detail="No calibration found for this factory")
+    return CalibrationResponse(
+        factory_id=calibration.factory_id,
+        calibrated_duty_cycles=calibration.calibrated_duty_cycles,
+        simulation_error_pct=calibration.simulation_error_pct,
+        timestamp=calibration.timestamp,
+    )
+
+
+@router.get("/factory/{factory_id}/schedule", response_model=OptimizationResultResponse)
+async def get_latest_schedule(factory_id: UUID, db: Database):
+    factory = await db.get(Factory, factory_id)
+    if factory is None:
+        raise HTTPException(status_code=404, detail="Factory not found")
+    result = await db.execute(
+        select(OptimizationResult)
+        .where(OptimizationResult.factory_id == factory_id)
+        .order_by(OptimizationResult.created_at.desc())
+        .limit(1)
+    )
+    opt = result.scalar_one_or_none()
+    if opt is None:
+        raise HTTPException(status_code=404, detail="No optimization result found for this factory")
+    return OptimizationResultResponse.model_validate(opt)
+
+
+@router.get("/benchmark/cluster", response_model=list[ClusterBenchmarkItem])
+async def cluster_benchmark(sector: str = "textile"):
+    items = generate_cluster_benchmark(sector)
+    return [ClusterBenchmarkItem(**item) for item in items]
+
+
+@router.get("/compliance/dpr/{factory_id}")
+async def get_dpr(factory_id: UUID, db: Database):
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(
+        select(Factory).options(selectinload(Factory.machines)).where(Factory.id == factory_id)
+    )
+    factory = result.scalar_one_or_none()
+    if factory is None:
+        raise HTTPException(status_code=404, detail="Factory not found")
+    latest_bill = await _latest_bill(db, factory_id)
+    cal_result = await db.execute(
+        select(CalibrationLog)
+        .where(CalibrationLog.factory_id == factory_id)
+        .order_by(CalibrationLog.timestamp.desc())
+        .limit(1)
+    )
+    calibration = cal_result.scalar_one_or_none()
+    return generate_dpr(factory, latest_bill, calibration)

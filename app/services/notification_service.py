@@ -32,10 +32,11 @@ async def trigger_supervisor_voice_call(to_phone: str, message_hindi: str) -> st
 
 async def send_whatsapp_alert(to_phone: str, alert_text: str) -> str:
     recipient = to_phone if to_phone.startswith("whatsapp:") else f"whatsapp:{to_phone}"
+    sender = settings.twilio_whatsapp_from.replace(" ", "")
 
     def dispatch() -> str:
         message = _twilio_client().messages.create(
-            from_=settings.twilio_whatsapp_from,
+            from_=sender,
             to=recipient,
             body=alert_text,
         )
