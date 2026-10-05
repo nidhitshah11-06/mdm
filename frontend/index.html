@@ -6,12 +6,74 @@
 <title>SME-Twin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body,#root{height:100%;font-family:'Inter',sans-serif;background:#0f172a;color:#f1f5f9}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#334155;border-radius:2px}
+*{box-sizing:border-box}
+:root{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#1d2c38;background:#f3f4f2;font-synthesis:none;text-rendering:optimizeLegibility;font-optical-sizing:auto}
+html,body,#root{width:100%;min-height:100%;margin:0}
+body{background:#f3f4f2;color:#1d2c38;font-size:14px}
+button,input,select{font:inherit}
+button{color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #7393a9;outline-offset:2px}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#c2cbd0;border:2px solid #f3f4f2;border-radius:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pu{0%,100%{opacity:1}50%{opacity:.3}}
-input,select,button{font-family:inherit}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.72}}
+.app-shell{height:100vh;min-height:600px;background:#f3f4f2;color:#1d2c38}
+.app-sidebar{width:220px!important;min-height:100vh!important;background:#172b3a!important;border:0!important;color:#d7e0e5}
+.app-brand{padding:20px 18px!important;border-bottom:1px solid #304453!important}
+.app-sidebar select{background:#203746!important;border-color:#405665!important;color:#edf2f4!important;border-radius:3px!important}
+.app-nav{padding:14px 10px!important}
+.app-nav button{min-height:39px!important;border-radius:3px!important;color:#b6c4cc!important;font-size:13px!important}
+.app-nav button[aria-current="page"]{background:#2d4657!important;color:#fff!important;box-shadow:inset 3px 0 #86a5bb}
+.app-nav button:hover{background:#233b4b!important;color:#fff!important}
+.app-header{height:64px!important;padding:0 26px!important;background:#fff!important;border-bottom:1px solid #dbe1e2!important}
+.app-header h1{font-size:16px!important;font-weight:650!important;color:#1d2c38!important}
+.app-workspace{padding:24px 28px!important;background:#f3f4f2!important;color:#263744;overflow-y:auto}
+.app-panel{background:#fff!important;border:1px solid #d9e0e2!important;border-radius:4px!important;padding:18px!important;box-shadow:0 1px 2px rgba(23,43,58,.035)!important}
+.app-panel h2{color:#203343!important}
+.app-section-title{margin-bottom:13px!important}
+.app-section-title h2{font-size:14px!important;font-weight:650!important;letter-spacing:-.01em}
+.app-section-title p{font-size:12px!important;color:#72818a!important}
+.app-button{border-radius:3px!important;font-size:12px!important;font-weight:600!important;letter-spacing:.01em;min-height:34px;box-shadow:none!important}
+.app-button:hover:not(:disabled){filter:brightness(.96)}
+.app-button:disabled{opacity:.55!important}
+.app-badge{border-radius:3px!important;letter-spacing:.04em;text-transform:uppercase}
+.app-status{background:#edf3ef!important;border:1px solid #d6e2d9!important;color:#426b52!important;animation:none!important}
+.app-status-dot{animation:none!important}
+.app-model-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:0 0 16px}
+.app-model-heading h2{margin:0;color:#1b2e3c;font-size:20px;font-weight:650;letter-spacing:-.035em}
+.app-model-heading p{margin:5px 0 0;color:#697b85;font-size:12px;line-height:1.55}
+.app-data-notice{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;margin:0 0 16px;border:1px solid #d9e0e2;border-left:3px solid #7393a9;background:#fff;color:#566a77;font-size:12px;line-height:1.5}
+.app-data-notice strong{color:#263c4c}
+.app-twin-grid{display:grid!important;grid-template-columns:minmax(0,1.8fr) minmax(260px,.9fr)!important;gap:14px!important}
+.app-twin-canvas{background:#f7f8f7!important;border:1px solid #e0e5e5!important;border-radius:3px!important}
+.app-machine-table{width:100%;border-collapse:collapse;font-size:12px}
+.app-machine-table th{padding:9px 8px!important;border-bottom:1px solid #dce2e3!important;color:#697b85!important;font-size:10px!important;text-transform:uppercase;letter-spacing:.06em}
+.app-machine-table td{padding:10px 8px!important;border-bottom:1px solid #edf0ef!important;color:#425663!important}
+.app-machine-table tr:last-child td{border-bottom:0!important}
+.app-workspace [style*="color: rgb(241, 245, 249)"],.app-workspace [style*="color: rgb(226, 232, 240)"],.app-workspace [style*="color:#f1f5f9"],.app-workspace [style*="color:#e2e8f0"]{color:#263744!important}
+.app-workspace [style*="color: rgb(203, 213, 225)"],.app-workspace [style*="color: rgb(148, 163, 184)"],.app-workspace [style*="color: rgb(100, 116, 139)"],.app-workspace [style*="color: rgb(71, 85, 105)"],.app-workspace [style*="color:#cbd5e1"],.app-workspace [style*="color:#94a3b8"],.app-workspace [style*="color:#64748b"],.app-workspace [style*="color:#475569"]{color:#667984!important}
+.app-workspace [style*="background: rgb(30, 41, 59)"]{background:#f2f5f5!important}
+.app-workspace [style*="background: rgb(15, 23, 42)"]{background:#f7f8f7!important}
+.app-workspace [style*="background: rgb(10, 15, 30)"]{background:#f7f8f7!important}
+.app-workspace [style*="border: 1px solid rgb(30, 41, 59)"],.app-workspace [style*="border-bottom: 1px solid rgb(30, 41, 59)"]{border-color:#dce2e3!important}
+.app-workspace input,.app-workspace select{background:#fff!important;border:1px solid #cfd8dc!important;border-radius:3px!important;color:#243846!important;min-height:36px}
+.app-workspace input::placeholder{color:#8a989f}
+.app-workspace table{border-color:#dce2e3!important}
+.app-workspace th,.app-workspace td{border-color:#e7ebeb!important}
+.app-workspace .recharts-cartesian-grid line{stroke:#e2e7e8}
+.app-workspace .recharts-text{fill:#667984}
+.app-empty-state{padding:28px 18px;border:1px dashed #cbd5d8;background:#fafbfa;color:#687983;font-size:12px;line-height:1.55;text-align:center}
+.app-empty-state strong{display:block;margin-bottom:4px;color:#334a59;font-size:13px}
+.app-sample-tag{display:inline-flex;align-items:center;padding:4px 7px;border:1px solid #e7d9b7;background:#f8f2e5;color:#795f2c;border-radius:3px;font-size:10px;font-weight:650;letter-spacing:.06em;text-transform:uppercase}
+.app-login{background:#f3f4f2!important;color:#223541!important}
+.app-login [style*="background: rgb(2, 6, 23)"]{background:#f3f4f2!important}
+.app-login [style*="background: rgb(10, 15, 30)"]{background:#fff!important;border-color:#d9e0e2!important}
+.app-login [style*="color: rgb(255, 255, 255)"],.app-login [style*="color:#fff"]{color:#203343!important}
+.app-login [style*="color: rgb(71, 85, 105)"],.app-login [style*="color:#475569"]{color:#687983!important}
+.app-login [style*="background: rgb(20, 83, 45)"]{background:#e8f0eb!important}
+.app-login input{background:#fff!important;color:#203343!important;border-color:#cfd8dc!important;border-radius:3px!important}
+@media(max-width:900px){.app-sidebar{width:190px!important}.app-workspace{padding:18px!important}.app-twin-grid{grid-template-columns:minmax(0,1fr)!important}}
+@media(max-width:680px){.app-shell{height:auto!important;min-height:100vh;display:block!important;overflow:visible!important}.app-sidebar{width:100%!important;min-height:0!important;height:auto!important}.app-brand{padding:12px 15px!important}.app-sidebar>div:nth-child(2){max-width:100%;border-bottom:0!important}.app-nav{display:flex;gap:4px;overflow-x:auto;flex:initial!important;padding:5px 8px!important}.app-nav button{width:auto!important;min-width:max-content;margin:0!important;padding:8px 10px!important}.app-sidebar>div:last-child{display:none!important}.app-header{height:auto!important;min-height:58px;padding:10px 14px!important;gap:10px}.app-header>div{gap:6px!important;flex-wrap:wrap}.app-scroll{height:auto!important;overflow:visible!important}.app-workspace{overflow:visible!important;padding:14px!important}.app-model-heading{flex-direction:column}.app-machine-table{min-width:560px}}
 </style>
 </head>
 <body>
@@ -28,8 +90,42 @@ var useEffect = R.useEffect;
 var useCallback = R.useCallback;
 var RC = Recharts;
 
-var API = 'http://localhost:8000/api/v1';
+var API = '/api/v1';
 var COLORS = ['#16a34a','#2563eb','#d97706','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d'];
+
+var ICON_PATHS={
+  activity:'M22 12h-4l-3 9L9 3l-3 9H2',
+  bank:'M3 10h18M5 10v9m5-9v9m4-9v9m5-9v9M3 21h18M12 3 2 8v2h20V8z',
+  bell:'M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12h4',
+  bolt:'m13 2-3 8h7l-7 12 2-9H5l8-11z',
+  chart:'M3 3v18h18M18 17V9m-5 8V5m-5 12v-5',
+  check:'m5 12 4 4L19 6',
+  'check-circle':'M22 11.1V12a10 10 0 1 1-5.9-9.1M22 4 12 14.01l-3-3',
+  clipboard:'M9 5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a3 3 0 0 0 6 0 3 3 0 0 0-6 0m0 8h6m-6 4h6',
+  file:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6m-10 4h4m-4 4h4',
+  factory:'M2 21V8l7 4V8l7 4V4h5v17zM10 21v-4h3v4m5-12h1m-1 4h1m-1 4h1',
+  folder:'M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 10h18',
+  gear:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8m0-6v3m0 14v3m10-10h-3M5 12H2m17.1-7.1L17 7m-10 10-2.1 2.1m14.2 0L17 17M7 7 4.9 4.9',
+  leaf:'M20 4c-8 0-14 3-14 10a6 6 0 0 0 6 6c7 0 10-6 8-16M4 21c3-5 7-8 12-11',
+  lock:'M5 11h14v10H5zM8 11V7a4 4 0 1 1 8 0v4m-4 4v2',
+  message:'M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 4a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z',
+  phone:'M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.5 3a2 2 0 0 1-.6 1.7L7.1 10a16 16 0 0 0 6 6l1.6-1.9a2 2 0 0 1 1.7-.6l3 .5a2 2 0 0 1 1.6 1.9z',
+  printer:'M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2m-12-3h12v7H6z',
+  radio:'M4.9 19.1A10 10 0 0 1 4.9 4.9m4.2 11.3a4 4 0 0 1 0-5.6m4.2 8.5a8 8 0 0 0 0-11.3M17.5 16a6 6 0 0 0 0-8.5M12 12h.01',
+  shield:'M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11m-3-11 2 2 4-4',
+  target:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20m0-6a4 4 0 1 0 0-8 4 4 0 0 0 0 8m0-6h.01',
+  'trending-down':'m22 17-8.5-8.5-5 5L2 7m14 10h6v-6',
+  trophy:'M8 21h8m-4-4v4m-7-16h14v7a7 7 0 0 1-14 0zm0 2H3v3a4 4 0 0 0 4 4m10-7h4v3a4 4 0 0 1-4 4',
+  upload:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5-5 5 5m-5-5v12',
+  'alert-triangle':'m10.3 3.9-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3.1l-8-14a2 2 0 0 0-3.4 0M12 9v4m0 4h.01',
+  'plus-circle':'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20m-5-10h10m-5-5v10',
+  play:'M8 5v14l11-7z',
+  wrench:'M14.7 6.3a5 5 0 0 0-6.4 6.4L2 19l3 3 6.3-6.3a5 5 0 0 0 6.4-6.4L14 13l-3-3z'
+};
+
+function Icon(p){
+  return h('svg',{width:p.size||16,height:p.size||16,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':'true',focusable:'false',style:{display:'inline-block',verticalAlign:'middle',flexShrink:0}},h('path',{d:ICON_PATHS[p.name]||ICON_PATHS.activity}));
+}
 
 function inr(n){if(n==null)return'—';var a=Math.abs(n);if(a>=1e7)return'₹'+(n/1e7).toFixed(1)+' Cr';if(a>=1e5)return'₹'+(n/1e5).toFixed(1)+' L';return'₹'+Math.round(n).toLocaleString('en-IN');}
 function fmt(n,d){return n==null?'—':Number(n).toFixed(d==null?1:d);}
@@ -39,8 +135,6 @@ var MF={id:'mock-1',name:'Shree Ganesh Textiles',sector:'Textile/Spinning',phone
   latest_bill:{billing_month:'2026-09',total_kwh:84200,peak_demand_kva:320,tod_peak_kwh:41000,tod_offpeak_kwh:43200},
   latest_calibration:{simulation_error_pct:3.2,timestamp:'2026-10-01T08:30:00Z',calibrated_duty_cycles:{m1:.72,m2:.68,m3:.74,m4:.70,m5:.55,m6:.52,m7:.38,m8:.61,m9:1.0}}
 };
-var MS={optimized_daily_cost:58420,baseline_daily_cost:67840,estimated_daily_savings:9420,savings_percent:13.9,hourly_schedule:{m7:[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0],m5:[1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1]}};
-
 var api={
   get:function(p){return fetch(API+p).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});},
   post:function(p,b){return fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});},
@@ -53,23 +147,23 @@ function Spin(){return h('span',{style:{display:'inline-block',width:14,height:1
 function Btn(p){
   var base={display:'inline-flex',alignItems:'center',gap:6,padding:'7px 16px',borderRadius:8,fontSize:13,fontWeight:500,border:'none',cursor:p.disabled||p.loading?'not-allowed':'pointer',opacity:p.disabled||p.loading?.5:1,transition:'background .15s'};
   var v={primary:{background:'#15803d',color:'#fff'},secondary:{background:'#1e293b',color:'#cbd5e1'},ghost:{background:'transparent',color:'#64748b'},danger:{background:'#b91c1c',color:'#fff'}};
-  return h('button',{onClick:p.onClick,disabled:p.disabled||p.loading,style:Object.assign({},base,v[p.v||'primary'],p.style||{})},p.loading&&h(Spin,null),p.children);
+  return h('button',{className:'app-button',onClick:p.onClick,disabled:p.disabled||p.loading,style:Object.assign({},base,v[p.v||'primary'],p.style||{})},p.loading&&h(Spin,null),p.children);
 }
 
-function Card(p){return h('div',{style:Object.assign({background:'#0f172a',border:'1px solid #1e293b',borderRadius:12,padding:20},p.style||{})},p.children);}
+function Card(p){return h('div',{className:'app-panel',style:Object.assign({background:'#0f172a',border:'1px solid #1e293b',borderRadius:12,padding:20},p.style||{})},p.children);}
 
 function KPI(p){
   var clr={green:'#22c55e',blue:'#60a5fa',amber:'#fbbf24',red:'#f87171'}[p.color]||'#22c55e';
-  return h(Card,null,h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:6}},h('span',{style:{fontSize:11,color:'#475569',textTransform:'uppercase',letterSpacing:'.06em',fontWeight:500}},p.label),p.icon&&h('span',{style:{fontSize:18}},p.icon)),h('div',{style:{fontSize:22,fontWeight:700,color:clr}},p.value),p.sub&&h('div',{style:{fontSize:11,color:'#475569',marginTop:4}},p.sub));
+  return h(Card,null,h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:6}},h('span',{style:{fontSize:11,color:'#475569',textTransform:'uppercase',letterSpacing:'.06em',fontWeight:500}},p.label),p.icon&&h('span',{style:{color:clr}},h(Icon,{name:p.icon,size:17}))),h('div',{style:{fontSize:22,fontWeight:700,color:clr}},p.value),p.sub&&h('div',{style:{fontSize:11,color:'#475569',marginTop:4}},p.sub));
 }
 
 function Badge(p){
   var s={green:{background:'#14532d',color:'#86efac'},blue:{background:'#1e3a5f',color:'#93c5fd'},amber:{background:'#451a03',color:'#fcd34d'},red:{background:'#450a0a',color:'#fca5a5'},slate:{background:'#1e293b',color:'#94a3b8'}};
   var st=s[p.color||'slate']||s.slate;
-  return h('span',{style:Object.assign({fontSize:11,padding:'2px 8px',borderRadius:20,fontWeight:500},st)},p.children);
+  return h('span',{className:'app-badge',style:Object.assign({fontSize:11,padding:'2px 8px',borderRadius:20,fontWeight:500},st)},p.children);
 }
 
-function SH(p){return h('div',{style:{marginBottom:14}},h('h2',{style:{fontSize:14,fontWeight:600,color:'#f1f5f9',margin:0}},p.title),p.sub&&h('p',{style:{fontSize:11,color:'#475569',marginTop:2}},p.sub));}
+function SH(p){return h('div',{className:'app-section-title',style:{marginBottom:14}},h('h2',{style:{fontSize:14,fontWeight:600,color:'#f1f5f9',margin:0}},p.title),p.sub&&h('p',{style:{fontSize:11,color:'#475569',marginTop:2}},p.sub));}
 
 function Toast(p){return h('div',{style:{position:'fixed',top:16,right:16,zIndex:9999,display:'flex',flexDirection:'column',gap:8,pointerEvents:'none'}},p.toasts.map(function(t){return h('div',{key:t.id,style:{padding:'10px 16px',borderRadius:8,fontSize:13,fontWeight:500,background:t.type==='error'?'#dc2626':'#15803d',color:'#fff',boxShadow:'0 4px 20px rgba(0,0,0,.5)',pointerEvents:'auto'}},t.msg);}));}
 
@@ -90,18 +184,18 @@ function LoginPage(p){
     setLoading(true);setTimeout(function(){p.onLogin({role:'supervisor',name:name.trim(),phone:phone.trim()});},400);
   }
 
-  return h('div',{style:{minHeight:'100vh',background:'#020617',display:'flex',alignItems:'center',justifyContent:'center',padding:24}},
+  return h('div',{className:'app-login',style:{minHeight:'100vh',background:'#020617',display:'flex',alignItems:'center',justifyContent:'center',padding:24}},
     h('div',{style:{width:'100%',maxWidth:700}},
       h('div',{style:{textAlign:'center',marginBottom:40}},
         h('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',gap:12,marginBottom:8}},
-          h('div',{style:{width:52,height:52,background:'#14532d',borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',fontSize:26}},'🏭'),
+          h('div',{style:{width:52,height:52,background:'#14532d',borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',color:'#86efac'}},h(Icon,{name:'factory',size:26})),
           h('div',null,h('h1',{style:{fontSize:26,fontWeight:800,color:'#fff',margin:0}},'SME-Twin'),h('p',{style:{fontSize:13,color:'#22c55e',margin:0,fontWeight:500}},'Zero-Hardware Energy Intelligence'))
         ),
         h('p',{style:{fontSize:13,color:'#475569',maxWidth:380,margin:'0 auto'}},'Calibrated digital twin for Indian manufacturing SMEs — optimise energy with zero hardware.')
       ),
       !role&&h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,maxWidth:580,margin:'0 auto'}},
         h('div',{onClick:doAdmin,style:{background:'#0a0f1e',border:'1px solid #1e293b',borderRadius:16,padding:28,cursor:'pointer'}},
-          h('div',{style:{fontSize:32,marginBottom:14}},'👑'),
+          h('div',{style:{marginBottom:14,color:'#fbbf24'}},h(Icon,{name:'shield',size:28})),
           h('h2',{style:{fontSize:17,fontWeight:700,color:'#fff',marginBottom:8}},'Admin'),
           h('p',{style:{fontSize:13,color:'#475569',lineHeight:1.6,marginBottom:16}},'Full access — all factories, twin, optimizer, compliance, alerts.'),
           h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between'}},
@@ -110,7 +204,7 @@ function LoginPage(p){
           )
         ),
         h('div',{onClick:function(){setRole('supervisor');},style:{background:'#0a0f1e',border:'1px solid #1e293b',borderRadius:16,padding:28,cursor:'pointer'}},
-          h('div',{style:{fontSize:32,marginBottom:14}},'🔧'),
+          h('div',{style:{marginBottom:14,color:'#60a5fa'}},h(Icon,{name:'wrench',size:28})),
           h('h2',{style:{fontSize:17,fontWeight:700,color:'#fff',marginBottom:8}},'Supervisor'),
           h('p',{style:{fontSize:13,color:'#475569',lineHeight:1.6,marginBottom:16}},"Floor access — today's schedule, machine status, send alerts."),
           h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between'}},
@@ -121,7 +215,7 @@ function LoginPage(p){
       ),
       role==='supervisor'&&h('div',{style:{maxWidth:360,margin:'0 auto',background:'#0a0f1e',border:'1px solid #1e293b',borderRadius:16,padding:28}},
         h('button',{onClick:function(){setRole(null);setErr('');setPin('');},style:{background:'none',border:'none',color:'#475569',fontSize:13,cursor:'pointer',marginBottom:16}},'← Back'),
-        h('div',{style:{fontSize:28,marginBottom:12}},'🔧'),
+        h('div',{style:{marginBottom:12,color:'#60a5fa'}},h(Icon,{name:'wrench',size:24})),
         h('h2',{style:{fontSize:17,fontWeight:700,color:'#fff',marginBottom:4}},'Supervisor Login'),
         h('p',{style:{fontSize:12,color:'#475569',marginBottom:20}},'Demo PIN: 1234'),
         h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
@@ -138,30 +232,30 @@ function LoginPage(p){
 }
 
 // ── SIDEBAR ───────────────────────────────────────────────────────────────────
-var NAV=[{id:'dashboard',label:'Dashboard',icon:'⚡'},{id:'twin',label:'Digital Twin',icon:'🏭'},{id:'optimizer',label:'Optimizer',icon:'📊'},{id:'benchmark',label:'Benchmarking',icon:'📈'},{id:'compliance',label:'Compliance',icon:'📋'},{id:'alerts',label:'Alerts',icon:'🔔'},{id:'onboarding',label:'Onboarding',icon:'➕'}];
+var NAV=[{id:'dashboard',label:'Dashboard',icon:'activity'},{id:'twin',label:'Digital Twin',icon:'factory'},{id:'optimizer',label:'Optimizer',icon:'chart'},{id:'benchmark',label:'Benchmarking',icon:'trending-down'},{id:'compliance',label:'Compliance',icon:'clipboard'},{id:'alerts',label:'Alerts',icon:'bell'},{id:'onboarding',label:'Onboarding',icon:'plus-circle'}];
 
 function Sidebar(p){
-  return h('aside',{style:{width:210,minHeight:'100vh',background:'#020617',borderRight:'1px solid #0f172a',display:'flex',flexDirection:'column',flexShrink:0}},
-    h('div',{style:{padding:'14px 16px',borderBottom:'1px solid #0f172a'}},
-      h('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:2}},h('span',{style:{fontSize:16}},'🏭'),h('span',{style:{fontSize:14,fontWeight:700,color:'#22c55e'}},'SME-Twin')),
+  return h('aside',{className:'app-sidebar',style:{width:210,minHeight:'100vh',background:'#020617',borderRight:'1px solid #0f172a',display:'flex',flexDirection:'column',flexShrink:0}},
+    h('div',{className:'app-brand',style:{padding:'14px 16px',borderBottom:'1px solid #0f172a'}},
+      h('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:2}},h(Icon,{name:'factory',size:16}),h('span',{style:{fontSize:14,fontWeight:700,color:'#22c55e'}},'SME-Twin')),
       h('p',{style:{fontSize:10,color:'#334155'}},'Energy Intelligence')
     ),
     h('div',{style:{padding:'8px 12px',borderBottom:'1px solid #0f172a'}},
       h('label',{style:{fontSize:10,color:'#334155',display:'block',marginBottom:3,textTransform:'uppercase',letterSpacing:'.05em'}},'Factory'),
-      h('select',{value:p.factory?p.factory.id:'',onChange:function(e){var f=p.factories.find(function(x){return x.id===e.target.value;});if(f)p.setFactory(f);},style:{width:'100%',background:'#0f172a',border:'1px solid #1e293b',color:'#94a3b8',borderRadius:6,padding:'4px 8px',fontSize:12}},
+      h('select',{value:p.factory?p.factory.id:'',onChange:function(e){var f=p.factories.find(function(x){return String(x.id)===e.target.value;});if(f)p.onFactorySelect(f);},style:{width:'100%',background:'#0f172a',border:'1px solid #1e293b',color:'#94a3b8',borderRadius:6,padding:'4px 8px',fontSize:12}},
         p.factories.map(function(f){return h('option',{key:f.id,value:f.id},f.name);})
       )
     ),
-    h('nav',{style:{flex:1,padding:'6px'}},
+    h('nav',{className:'app-nav',style:{flex:1,padding:'6px'}},
       NAV.map(function(n){
         var active=p.page===n.id;
-        return h('button',{key:n.id,onClick:function(){p.setPage(n.id);},style:{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'7px 12px',borderRadius:7,border:'none',fontSize:12,fontWeight:500,marginBottom:1,background:active?'#14532d':'transparent',color:active?'#86efac':'#475569',cursor:'pointer',textAlign:'left'}},h('span',null,n.icon),n.label);
+        return h('button',{key:n.id,'aria-current':active?'page':undefined,onClick:function(){p.setPage(n.id);},style:{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'7px 12px',borderRadius:7,border:'none',fontSize:12,fontWeight:500,marginBottom:1,background:active?'#14532d':'transparent',color:active?'#86efac':'#475569',cursor:'pointer',textAlign:'left'}},h(Icon,{name:n.icon,size:15}),n.label);
       })
     ),
     h('div',{style:{padding:'10px 14px',borderTop:'1px solid #0f172a'}},
       h('div',{style:{display:'flex',alignItems:'center',gap:5}},
-        h('div',{style:{width:7,height:7,borderRadius:'50%',background:'#22c55e',animation:'pu 2s ease-in-out infinite'}}),
-        h('span',{style:{fontSize:11,color:'#22c55e'}},'System Online')
+        h('div',{style:{width:7,height:7,borderRadius:'50%',background:'#86a5bb'}}),
+        h('span',{style:{fontSize:11,color:'#b6c4cc'}},p.isDemo?'Sample workspace':'Connected workspace')
       )
     )
   );
@@ -169,14 +263,15 @@ function Sidebar(p){
 
 function Header(p){
   var titles={dashboard:'Dashboard',twin:'Digital Twin',optimizer:'Schedule Optimizer',benchmark:'Benchmarking',compliance:'Compliance & DPR',alerts:'Voice & WhatsApp Alerts',onboarding:'Onboarding'};
-  return h('header',{style:{height:50,background:'#020617',borderBottom:'1px solid #0f172a',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 20px',flexShrink:0}},
+  return h('header',{className:'app-header',style:{height:50,background:'#020617',borderBottom:'1px solid #0f172a',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 20px',flexShrink:0}},
     h('div',{style:{display:'flex',alignItems:'center',gap:10}},
       h('h1',{style:{fontSize:14,fontWeight:600,color:'#f1f5f9',margin:0}},titles[p.page]||p.page),
-      p.factory&&h('span',{style:{fontSize:11,background:'#0f172a',color:'#475569',padding:'2px 8px',borderRadius:20,border:'1px solid #1e293b'}},p.factory.name)
+      p.factory&&h('span',{style:{fontSize:11,background:'#f0f3f3',color:'#526875',padding:'4px 8px',borderRadius:3,border:'1px solid #dbe2e3'}},p.factory.name),
+      p.isDemo&&h('span',{className:'app-sample-tag'},'Illustrative sample')
     ),
     h('div',{style:{display:'flex',alignItems:'center',gap:10}},
-      p.user&&h('span',{style:{fontSize:12,background:'#0f172a',border:'1px solid #1e293b',color:p.user.role==='admin'?'#22c55e':'#60a5fa',padding:'3px 10px',borderRadius:20}},(p.user.role==='admin'?'👑 ':'🔧 ')+p.user.name),
-      h('div',{style:{display:'flex',alignItems:'center',gap:4,background:'#052e16',border:'1px solid #14532d',padding:'3px 9px',borderRadius:20}},h('div',{style:{width:6,height:6,borderRadius:'50%',background:'#22c55e',animation:'pu 2s ease-in-out infinite'}}),h('span',{style:{fontSize:11,color:'#22c55e',fontWeight:500}},'Live')),
+      p.user&&h('span',{style:{display:'inline-flex',alignItems:'center',gap:5,fontSize:12,background:'#f0f3f3',border:'1px solid #dbe2e3',color:'#526875',padding:'4px 8px',borderRadius:3}},h(Icon,{name:p.user.role==='admin'?'shield':'wrench',size:13}),p.user.name),
+      h('div',{className:'app-status',style:{display:'flex',alignItems:'center',gap:4,background:'#052e16',border:'1px solid #14532d',padding:'4px 8px',borderRadius:20}},h('div',{className:'app-status-dot',style:{width:6,height:6,borderRadius:'50%',background:'#22c55e'}}),h('span',{style:{fontSize:11,color:'#22c55e',fontWeight:500}},p.isDemo?'Sample mode':'Saved model')),
       h('button',{onClick:p.onLogout,style:{background:'none',border:'none',color:'#334155',fontSize:11,cursor:'pointer',padding:'3px 6px'}},'Sign out')
     )
   );
@@ -184,67 +279,36 @@ function Header(p){
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
 function Dashboard(p){
-  var f=p.factory||MF,s=p.schedule||MS;
-  var bill=f.latest_bill||MF.latest_bill,cal=f.latest_calibration||MF.latest_calibration;
-  var dc=cal&&cal.calibrated_duty_cycles||{};
-  var totalKw=f.machines.reduce(function(a,m){return a+m.rated_kw;},0);
-  var pieData=f.machines.map(function(m){return{name:m.name,value:Math.round(m.rated_kw/totalKw*100)};});
-  var hourly=Array.from({length:24},function(_,i){
-    var bl=0,op=0;
-    f.machines.forEach(function(m){var d=dc[m.id]||.6;bl+=m.rated_kw*(i>=6&&i<22?d*1.2:d*.5);op+=m.rated_kw*((s.hourly_schedule&&s.hourly_schedule[m.id])?s.hourly_schedule[m.id][i]:(i>=6&&i<22?d*.9:d*.4));});
-    return{h:i+'h',baseline:Math.round(bl),optimized:Math.round(op)};
-  });
-  var monthly=(s.estimated_daily_savings||9420)*30;
-  var billAmt=(bill.total_kwh||84200)*8.5;
-
-  return h('div',{style:{display:'flex',flexDirection:'column',gap:18}},
-    h('div',{style:{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14}},
-      h(KPI,{label:'Monthly Bill',value:inr(billAmt),sub:'September 2026',icon:'💰',color:'amber'}),
-      h(KPI,{label:'Simulated Savings',value:inr(monthly),sub:fmt(s.savings_percent)+'% reduction',icon:'📉',color:'green'}),
-      h(KPI,{label:'Carbon Footprint',value:((bill.total_kwh||84200)*.82/1000).toFixed(1)+' tCO₂',sub:'This month',icon:'🌱',color:'blue'}),
-      h(KPI,{label:'Twin Accuracy',value:fmt(cal&&cal.simulation_error_pct||3.2)+'% error',sub:'Calibrated Oct 2026',icon:'🎯',color:'green'})
+  var f=p.factory||{},bill=f.latest_bill,cal=f.latest_calibration,schedule=p.schedule;
+  var machines=Array.isArray(f.machines)?f.machines:[];
+  return h('div',{style:{display:'flex',flexDirection:'column',gap:16}},
+    h('div',{className:'app-model-heading'},
+      h('div',null,h('h2',null,'Model overview'),h('p',null,'Energy model for '+(f.name||'selected factory')+'. Values are shown only when supplied by the model or bill.')),
+      h('button',{className:'app-button',onClick:function(){p.setPage('twin');},style:{background:'#233f53',color:'#fff',padding:'8px 12px',border:'1px solid #233f53'}},h(Icon,{name:'factory',size:14}),'Open digital twin')
     ),
-    h('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14}},
+    p.isDemo&&h('div',{className:'app-data-notice'},h('span',{className:'app-sample-tag'},'Sample'),h('span',null,h('strong',null,'Illustrative workspace. '),'This factory, bill, machine inventory and calibration are example values for the prototype, not measured operating data.')),
+    h('div',{style:{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12}},
+      h(KPI,{label:'Billed energy',value:bill?fmt(bill.total_kwh,0)+' kWh':'—',sub:bill?'Billing period '+bill.billing_month:'No bill uploaded',icon:'bolt',color:'blue'}),
+      h(KPI,{label:'Peak demand',value:bill?fmt(bill.peak_demand_kva,1)+' kVA':'—',sub:bill?'From latest uploaded bill':'No bill uploaded',icon:'activity',color:'amber'}),
+      h(KPI,{label:'Calibration residual',value:cal?fmt(cal.simulation_error_pct)+'%':'—',sub:cal?'Difference from bill total':'Model not calibrated',icon:'target',color:cal?'green':'blue'})
+    ),
+    h('div',{style:{display:'grid',gridTemplateColumns:'1.4fr 1fr',gap:14}},
       h(Card,null,
-        h(SH,{title:'24-Hour Load Profile',sub:'Baseline vs. Optimised (kW)'}),
-        h(RC.ResponsiveContainer,{width:'100%',height:190},
-          h(RC.LineChart,{data:hourly,margin:{top:5,right:5,left:-25,bottom:0}},
-            h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#1e293b'}),
-            h(RC.XAxis,{dataKey:'h',tick:{fill:'#334155',fontSize:10}}),
-            h(RC.YAxis,{tick:{fill:'#334155',fontSize:10}}),
-            h(RC.Tooltip,{contentStyle:{background:'#0a0f1e',border:'1px solid #1e293b',borderRadius:8}}),
-            h(RC.Legend,{wrapperStyle:{fontSize:11}}),
-            h(RC.Line,{type:'monotone',dataKey:'baseline',stroke:'#334155',strokeWidth:2,dot:false,name:'Baseline'}),
-            h(RC.Line,{type:'monotone',dataKey:'optimized',stroke:'#22c55e',strokeWidth:2.5,dot:false,name:'Optimised'})
-          )
+        h(SH,{title:'Observation coverage',sub:'Data currently available to this prototype'}),
+        h('div',{className:'app-empty-state'},h('strong',null,'No interval observations are available'), 'The model stores monthly bill totals and machine duty-cycle estimates. It does not yet store time-stamped meter readings, so an actual-versus-predicted time-series comparison cannot be shown.'),
+        h('div',{style:{display:'flex',gap:20,flexWrap:'wrap',marginTop:14,fontSize:12}},
+          h('span',null,'Bill: ',bill?'Available':'Not uploaded'),
+          h('span',null,'Machine records: ',machines.length),
+          h('span',null,'Calibration: ',cal?'Available':'Not run')
         )
       ),
       h(Card,null,
-        h(SH,{title:'Energy Breakdown'}),
-        h(RC.ResponsiveContainer,{width:'100%',height:150},
-          h(RC.PieChart,null,
-            h(RC.Pie,{data:pieData,cx:'50%',cy:'50%',innerRadius:38,outerRadius:60,dataKey:'value',paddingAngle:2},
-              pieData.map(function(_,i){return h(RC.Cell,{key:i,fill:COLORS[i%COLORS.length]});})
-            ),
-            h(RC.Tooltip,{contentStyle:{background:'#0a0f1e',border:'1px solid #1e293b',borderRadius:8}})
-          )
-        ),
-        h('div',{style:{display:'flex',flexWrap:'wrap',gap:5,marginTop:4}},
-          pieData.slice(0,5).map(function(d,i){return h('div',{key:i,style:{display:'flex',alignItems:'center',gap:3,fontSize:10,color:'#475569'}},h('div',{style:{width:7,height:7,borderRadius:2,background:COLORS[i]}}),d.name.split(' ')[0]);})
-        )
-      )
-    ),
-    h('div',{style:{display:'grid',gridTemplateColumns:'3fr 2fr',gap:14}},
-      h(Card,null,
-        h(SH,{title:'Top Recommendations'}),
-        h('div',{style:{display:'flex',flexDirection:'column',gap:8}},
-          [{a:'Shift Dyeing Vat to 10 PM–8 AM',s:10260,p:'HIGH',i:'💧'},{a:'Stagger Air Compressor starts by 15 min',s:3800,p:'MEDIUM',i:'💨'},{a:'Power factor correction capacitors',s:2100,p:'MEDIUM',i:'⚡'}]
-          .map(function(r,i){return h('div',{key:i,style:{display:'flex',alignItems:'center',justifyContent:'space-between',background:'#1e293b',borderRadius:8,padding:'9px 13px'}},h('div',{style:{display:'flex',alignItems:'center',gap:8}},h('span',{style:{fontSize:16}},r.i),h('div',null,h('div',{style:{fontSize:12,fontWeight:500,color:'#e2e8f0'}},r.a),h('div',{style:{fontSize:11,color:'#475569'}},'Est. '+inr(r.s)+'/mo'))),h(Badge,{color:r.p==='HIGH'?'red':'amber'},r.p));})
-        )
-      ),
-      h(Card,null,
-        h(SH,{title:'SDG Impact'}),
-        [{label:'⚡ SDG 7 — Clean Energy',pct:68,color:'#fbbf24'},{label:'🏭 SDG 9 — Industry',pct:54,color:'#60a5fa'}].map(function(s2){return h('div',{key:s2.label,style:{marginBottom:12}},h('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12,marginBottom:5}},h('span',{style:{color:'#e2e8f0'}},s2.label),h('span',{style:{color:'#64748b'}},s2.pct+'%')),h('div',{style:{background:'#1e293b',borderRadius:99,height:5}},h('div',{style:{background:s2.color,height:5,borderRadius:99,width:s2.pct+'%'}})));})
+        h(SH,{title:'Latest schedule',sub:'Only a saved optimizer result is shown'}),
+        schedule?h('div',null,
+          h('div',{style:{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:'1px solid #e7ebeb'}},h('span',null,'Baseline daily cost'),h('strong',null,inr(schedule.baseline_daily_cost))),
+          h('div',{style:{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:'1px solid #e7ebeb'}},h('span',null,'Optimized daily cost'),h('strong',null,inr(schedule.optimized_daily_cost))),
+          h('div',{style:{display:'flex',justifyContent:'space-between',padding:'8px 0'}},h('span',null,'Estimated daily savings'),h('strong',null,inr(schedule.estimated_daily_savings)))
+        ):h('div',{className:'app-empty-state'},h('strong',null,'No saved schedule'), 'Run the optimizer after a bill has been uploaded and the twin calibrated.')
       )
     )
   );
@@ -252,231 +316,165 @@ function Dashboard(p){
 
 // ── DIGITAL TWIN ──────────────────────────────────────────────────────────────
 function Twin(p){
-  var f=p.factory||MF,cal=f.latest_calibration||MF.latest_calibration;
+  var f=p.factory||{},machines=Array.isArray(f.machines)?f.machines:[],cal=f.latest_calibration;
   var dc=cal&&cal.calibrated_duty_cycles||{};
-  var hs=useState(null),hov=hs[0],setHov=hs[1];
-  function col(d){if(d>.8)return{fill:'#7f1d1d',stroke:'#ef4444',glow:'#ef444440'};if(d>.6)return{fill:'#78350f',stroke:'#f59e0b',glow:'#f59e0b40'};return{fill:'#14532d',stroke:'#22c55e',glow:'#22c55e40'};}
-  var totalKwh=f.machines.reduce(function(s,m){return s+m.rated_kw*720*(dc[m.id]||.6);},0);
-  var layout=[{id:'m1',x:45,y:40,w:100,h:45,label:'Ring Frame #1'},{id:'m2',x:45,y:96,w:100,h:45,label:'Ring Frame #2'},{id:'m3',x:45,y:152,w:100,h:45,label:'Ring Frame #3'},{id:'m4',x:45,y:208,w:100,h:45,label:'Ring Frame #4'},{id:'m5',x:200,y:40,w:82,h:45,label:'Compressor A'},{id:'m6',x:200,y:96,w:82,h:45,label:'Compressor B'},{id:'m7',x:200,y:152,w:82,h:68,label:'Dyeing Vat'},{id:'m8',x:200,y:232,w:82,h:32,label:'Utility Pump'},{id:'m9',x:336,y:40,w:64,h:244,label:'Lighting'}];
-  var hovM=hov?f.machines.find(function(m){return m.id===hov;}):null;
-  return h('div',{style:{display:'flex',flexDirection:'column',gap:18}},
-    h('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14}},
+  var canCalibrate=!p.isDemo&&Boolean(f.latest_bill)&&machines.length>0;
+  var columns=3,nodeWidth=148,nodeHeight=54,left=54,top=48,gapX=26,gapY=25;
+  var rows=Math.ceil(machines.length/columns);
+  var canvasHeight=Math.max(210,top+rows*(nodeHeight+gapY)+24);
+  var layout=machines.map(function(machine,index){
+    var id=String(machine.id||index);
+    return{machine:machine,id:id,x:left+(index%columns)*(nodeWidth+gapX),y:top+Math.floor(index/columns)*(nodeHeight+gapY),duty:dc[id]};
+  });
+  var hoveredState=useState(null),hovered=hoveredState[0],setHovered=hoveredState[1];
+  var hoveredItem=layout.find(function(item){return item.id===hovered;});
+  var calibratedAt=cal&&cal.timestamp?new Date(cal.timestamp).toLocaleString():'Not calibrated';
+  return h('div',{style:{display:'flex',flexDirection:'column',gap:14}},
+    h('div',{className:'app-model-heading'},
+      h('div',null,
+        h('h2',null,f.name||'Digital Twin'),
+        h('p',null,(f.sector||'Factory model')+' · Registered equipment, bill observations and available calibration record.'),
+        h('p',null,'Last calibration: '+calibratedAt)
+      ),
+      h('button',{className:'app-button',onClick:p.onCalibrate,disabled:!canCalibrate||p.calibrating,title:canCalibrate?'Recalculate duty cycles against the latest bill':p.isDemo?'Calibration is unavailable in the illustrative sample workspace':'Upload a bill and add machines before calibrating',style:{display:'inline-flex',alignItems:'center',gap:7,padding:'8px 12px',background:'#233f53',border:'1px solid #233f53',color:'#fff',cursor:canCalibrate?'pointer':'not-allowed'}},h(Icon,{name:'gear',size:14}),p.calibrating?'Calibrating…':p.isDemo?'Sample model':f.latest_bill?'Calibrate model':'Bill required')
+    ),
+    p.isDemo&&h('div',{className:'app-data-notice'},h('span',{className:'app-sample-tag'},'Illustrative'),h('span',null,h('strong',null,'Sample model, not measured operation. '),'Factory inventory, bill values and calibration values on this screen are included only to demonstrate the prototype.')),
+    h('div',{className:'app-twin-grid'},
       h(Card,null,
-        h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}},
-          h(SH,{title:'Factory Floor — Digital Twin',sub:'Hover machines · 🟢 efficient · 🟡 moderate · 🔴 high load'}),
-          h(Btn,{onClick:p.onCalibrate,loading:p.calibrating,v:'primary'},'⚙ Calibrate')
-        ),
-        h('div',{style:{position:'relative'}},
-          h('svg',{viewBox:'0 0 450 300',style:{width:'100%',background:'#020617',borderRadius:10,border:'1px solid #0f172a',display:'block'}},
-            h('defs',null,h('pattern',{id:'gr',width:20,height:20,patternUnits:'userSpaceOnUse'},h('path',{d:'M 20 0 L 0 0 0 20',fill:'none',stroke:'#0a0f1e',strokeWidth:1}))),
-            h('rect',{width:450,height:300,fill:'url(#gr)'}),
-            h('rect',{x:18,y:18,width:414,height:268,rx:8,fill:'none',stroke:'#0f172a',strokeWidth:1.5,strokeDasharray:'6 3'}),
-            h('line',{x1:0,y1:150,x2:18,y2:150,stroke:'#22c55e',strokeWidth:2}),
-            h('text',{x:1,y:144,fill:'#22c55e',fontSize:7,fontWeight:'bold'},'GRID'),
-            h('line',{x1:18,y1:40,x2:18,y2:280,stroke:'#1e293b',strokeWidth:2.5}),
-            layout.map(function(m){
-              var mm=f.machines.find(function(x){return x.id===m.id;});
-              var d=dc[m.id]||(mm&&mm.process_type==='continuous'?1:.6);
-              var c=col(d),isH=hov===m.id;
-              return h('g',{key:m.id,onMouseEnter:function(){setHov(m.id);},onMouseLeave:function(){setHov(null);},style:{cursor:'pointer'}},
-                h('rect',{x:m.x-3,y:m.y-3,width:m.w+6,height:m.h+6,rx:7,fill:c.glow,opacity:isH?.9:.5}),
-                h('rect',{x:m.x,y:m.y,width:m.w,height:m.h,rx:5,fill:c.fill,stroke:c.stroke,strokeWidth:isH?2:1}),
-                h('text',{x:m.x+m.w/2,y:m.y+m.h/2-(m.h>50?8:3),textAnchor:'middle',fill:'#f1f5f9',fontSize:8,fontWeight:'bold'},m.label),
-                h('text',{x:m.x+m.w/2,y:m.y+m.h/2+(m.h>50?4:8),textAnchor:'middle',fill:c.stroke,fontSize:7.5},Math.round(d*100)+'% duty')
+        h(SH,{title:'Factory model',sub:'Equipment positions are a schematic view of the registered machine inventory; they are not a measured floor plan.'}),
+        p.loading?h('div',{className:'app-empty-state'},h('strong',null,'Loading factory details'),'Retrieving equipment, bill and calibration records.'):
+        machines.length?h('div',{style:{overflowX:'auto'}},
+          h('svg',{className:'app-twin-canvas',viewBox:'0 0 600 '+canvasHeight,role:'img','aria-label':'Schematic factory model showing registered machines',style:{width:'100%',minWidth:470,display:'block'}},
+            h('defs',null,h('pattern',{id:'model-grid',width:24,height:24,patternUnits:'userSpaceOnUse'},h('path',{d:'M24 0H0V24',fill:'none',stroke:'#e9eded',strokeWidth:1}))),
+            h('rect',{width:600,height:canvasHeight,fill:'url(#model-grid)'}),
+            h('rect',{x:18,y:18,width:564,height:canvasHeight-36,fill:'none',stroke:'#cfd8dc',strokeWidth:1}),
+            h('text',{x:32,y:39,fill:'#637783',fontSize:10,fontWeight:600,letterSpacing:1},'REGISTERED MACHINES'),
+            h('line',{x1:28,y1:canvasHeight/2,x2:40,y2:canvasHeight/2,stroke:'#68869a',strokeWidth:2}),
+            h('line',{x1:40,y1:top+nodeHeight/2,x2:40,y2:canvasHeight-35,stroke:'#b1c0c7',strokeWidth:1.5}),
+            layout.map(function(item){
+              var hasDuty=typeof item.duty==='number'&&isFinite(item.duty);
+              var centerY=item.y+nodeHeight/2;
+              var name=item.machine.name.length>21?item.machine.name.slice(0,20)+'…':item.machine.name;
+              return h('g',{key:item.id,tabIndex:0,role:'group','aria-label':item.machine.name+'; '+item.machine.rated_kw+' kilowatts; '+(hasDuty?'duty cycle '+Math.round(item.duty*100)+' percent':'not calibrated'),onMouseEnter:function(){setHovered(item.id);},onMouseLeave:function(){setHovered(null);},onFocus:function(){setHovered(item.id);},onBlur:function(){setHovered(null);},style:{cursor:'default'}},
+                h('line',{x1:40,y1:centerY,x2:item.x,y2:centerY,stroke:'#a8b9c1',strokeWidth:1}),
+                h('rect',{x:item.x,y:item.y,width:nodeWidth,height:nodeHeight,fill:hovered===item.id?'#edf3f6':'#fff',stroke:hovered===item.id?'#54758a':'#aebdc4',strokeWidth:hovered===item.id?2:1,rx:2}),
+                h('text',{x:item.x+10,y:item.y+19,fill:'#243a49',fontSize:11,fontWeight:600},name),
+                h('text',{x:item.x+10,y:item.y+39,fill:'#667984',fontSize:10},fmt(item.machine.rated_kw,1)+' kW  ·  '+(hasDuty?Math.round(item.duty*100)+'% duty':'Awaiting calibration'))
               );
-            }),
-            h('circle',{r:3,fill:'#22c55e',opacity:.8},h('animateMotion',{dur:'3s',repeatCount:'indefinite',path:'M 0 150 L 18 62 L 95 62'})),
-            h('circle',{r:3,fill:'#22c55e',opacity:.6},h('animateMotion',{dur:'4s',repeatCount:'indefinite',path:'M 0 150 L 18 182 L 240 182'})),
-            h('circle',{r:2.5,fill:'#f59e0b',opacity:.7},h('animateMotion',{dur:'3.5s',repeatCount:'indefinite',path:'M 18 150 L 18 40 L 336 40 L 368 150'}))
-          ),
-          hovM&&h('div',{style:{position:'absolute',top:8,right:8,background:'#0f172a',border:'1px solid #1e293b',borderRadius:8,padding:10,fontSize:11,minWidth:150,pointerEvents:'none',boxShadow:'0 8px 24px rgba(0,0,0,.6)'}},
-            h('div',{style:{fontWeight:600,color:'#fff',marginBottom:6}},hovM.name),
-            [['Rated',hovM.rated_kw+' kW'],['Duty cycle',Math.round((dc[hovM.id]||.6)*100)+'%'],['Est. monthly',Math.round(hovM.rated_kw*720*(dc[hovM.id]||.6)).toLocaleString('en-IN')+' kWh'],['Bill share',((hovM.rated_kw*720*(dc[hovM.id]||.6))/totalKwh*100).toFixed(1)+'%']]
-            .map(function(row){return h('div',{key:row[0],style:{display:'flex',justifyContent:'space-between',gap:12,color:'#64748b',marginBottom:2}},h('span',null,row[0]),h('span',{style:{color:'#e2e8f0'}},row[1]));})
+            })
           )
+        ):h('div',{className:'app-empty-state'},h('strong',null,'No machine inventory'), 'Add machines during onboarding to build this factory model.'),
+        hoveredItem&&h('div',{style:{display:'flex',gap:14,flexWrap:'wrap',marginTop:12,paddingTop:10,borderTop:'1px solid #e7ebeb',fontSize:12}},
+          h('strong',null,hoveredItem.machine.name),
+          h('span',null,'Rated power: '+fmt(hoveredItem.machine.rated_kw,1)+' kW'),
+          h('span',null,'Process: '+String(hoveredItem.machine.process_type||'Not specified').replace('_',' ')),
+          h('span',null,'Duty cycle: '+(typeof hoveredItem.duty==='number'?Math.round(hoveredItem.duty*100)+'%':'Not calibrated'))
         )
       ),
-      h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
+      h('div',{style:{display:'flex',flexDirection:'column',gap:14}},
         h(Card,null,
-          h(SH,{title:'Calibration Status'}),
-          [['Error',fmt(cal&&cal.simulation_error_pct||3.2)+'%'],['Conf. band','±4.1%'],['Last calibrated','1 Oct 2026'],['Machines',f.machines.length]]
-          .map(function(r){return h('div',{key:r[0],style:{display:'flex',justifyContent:'space-between',fontSize:12,marginBottom:5}},h('span',{style:{color:'#64748b'}},r[0]),h('span',{style:{color:'#e2e8f0',fontWeight:500}},r[1]));})
+          h(SH,{title:'Calibration record',sub:'Model fit to bill total'}),
+          cal?h('div',null,
+            h('div',{style:{display:'flex',alignItems:'baseline',gap:6,marginBottom:4}},h('strong',{style:{fontSize:27,color:'#365c72'}},fmt(cal.simulation_error_pct)+'%'),h('span',{style:{fontSize:12}},'simulation error')),
+            h('p',{style:{fontSize:11,color:'#647984',margin:'0 0 14px'}},'Absolute difference between modelled and billed energy.'),
+            h('div',{style:{display:'flex',justifyContent:'space-between',gap:12,padding:'8px 0',borderTop:'1px solid #e7ebeb',fontSize:12}},h('span',null,'Calibrated'),h('span',null,calibratedAt)),
+            h('div',{style:{display:'flex',justifyContent:'space-between',gap:12,padding:'8px 0',borderTop:'1px solid #e7ebeb',fontSize:12}},h('span',null,'Bill period'),h('span',null,f.latest_bill&&f.latest_bill.billing_month||'Unavailable'))
+          ):h('div',{className:'app-empty-state'},h('strong',null,'Calibration not available'), 'Upload a bill and calibrate the registered machine inventory to create a model record.')
         ),
         h(Card,null,
-          h(SH,{title:'Calibration Loop'}),
-          [{n:'1',l:'Reasonable guess',s:'duty = bill / capacity',c:'#1e293b'},{n:'2',l:'Simulate full month',s:'machine-hours × kW',c:'#1e3a5f'},{n:'3',l:'Compare to bill',s:'match simulated to billed',c:'#451a03'},{n:'✓',l:'Twin ready',s:'error: '+fmt(cal&&cal.simulation_error_pct||3.2)+'%',c:'#14532d'}]
-          .map(function(s){return h('div',{key:s.n,style:{display:'flex',gap:8,alignItems:'flex-start',marginBottom:10}},h('div',{style:{width:20,height:20,borderRadius:'50%',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,background:s.c,color:'#f1f5f9'}},s.n),h('div',null,h('div',{style:{fontSize:12,fontWeight:500,color:'#e2e8f0'}},s.l),h('div',{style:{fontSize:10,color:'#475569'}},s.s)));})
+          h(SH,{title:'Model inputs',sub:'Values currently used by the twin'}),
+          h('div',{style:{display:'flex',justifyContent:'space-between',gap:12,padding:'7px 0',borderBottom:'1px solid #e7ebeb',fontSize:12}},h('span',null,'Machine records'),h('strong',null,machines.length)),
+          h('div',{style:{display:'flex',justifyContent:'space-between',gap:12,padding:'7px 0',borderBottom:'1px solid #e7ebeb',fontSize:12}},h('span',null,'Latest bill'),h('strong',null,f.latest_bill?f.latest_bill.billing_month:'Not uploaded')),
+          h('div',{style:{display:'flex',justifyContent:'space-between',gap:12,padding:'7px 0',fontSize:12}},h('span',null,'Interval meter data'),h('strong',null,'Not available')),
+          h('p',{style:{fontSize:11,color:'#647984',lineHeight:1.5,margin:'7px 0 0'}},'Calibration estimates machine duty cycles from rated power and aggregate billed kWh. It does not represent interval meter readings.')
         )
       )
     ),
     h(Card,null,
-      h(SH,{title:'Machine Inventory & Duty Cycles'}),
-      h('div',{style:{overflowX:'auto'}},
-        h('table',{style:{width:'100%',fontSize:12,borderCollapse:'collapse'}},
-          h('thead',null,h('tr',{style:{borderBottom:'1px solid #1e293b',color:'#475569',fontSize:11}},['Machine','kW','Type','Duty','Est. kWh/mo','Share','Status'].map(function(c){return h('th',{key:c,style:{textAlign:'left',padding:'5px 7px',fontWeight:500}},c);}))),
-          h('tbody',null,f.machines.map(function(m){
-            var d=dc[m.id]||.6,c=col(d),kwh=Math.round(m.rated_kw*720*d);
-            return h('tr',{key:m.id,style:{borderBottom:'1px solid #0f172a'}},
-              h('td',{style:{padding:'7px',fontWeight:500,color:'#e2e8f0'}},m.name),
-              h('td',{style:{padding:'7px',color:'#64748b'}},m.rated_kw),
-              h('td',{style:{padding:'7px'}},h(Badge,{color:m.process_type==='continuous'?'blue':'slate'},m.process_type)),
-              h('td',{style:{padding:'7px'}},h('div',{style:{display:'flex',alignItems:'center',gap:5}},h('div',{style:{width:50,background:'#1e293b',borderRadius:99,height:4}},h('div',{style:{width:Math.round(d*100)+'%',height:4,borderRadius:99,background:c.stroke}})),h('span',{style:{fontSize:10,fontWeight:500,color:c.stroke}},Math.round(d*100)+'%'))),
-              h('td',{style:{padding:'7px',color:'#64748b'}},kwh.toLocaleString('en-IN')),
-              h('td',{style:{padding:'7px',color:'#64748b'}},(kwh/totalKwh*100).toFixed(1)+'%'),
-              h('td',{style:{padding:'7px'}},h(Badge,{color:d>.8?'red':d>.6?'amber':'green'},d>.8?'High':d>.6?'Moderate':'Efficient'))
+      h(SH,{title:'Machine parameters',sub:'Equipment characteristics and calibrated duty cycles'}),
+      machines.length?h('div',{style:{overflowX:'auto'}},
+        h('table',{className:'app-machine-table'},
+          h('thead',null,h('tr',null,['Machine','Rated power','Operating type','Duty cycle'].map(function(label){return h('th',{key:label,style:{textAlign:'left'}},label); }))),
+          h('tbody',null,layout.map(function(item){
+            var duty=typeof item.duty==='number'&&isFinite(item.duty);
+            return h('tr',{key:item.id},
+              h('td',{style:{fontWeight:600,color:'#263744'}},item.machine.name),
+              h('td',null,fmt(item.machine.rated_kw,1)+' kW'),
+              h('td',null,item.machine.process_type?String(item.machine.process_type).replace('_',' '):'—'),
+              h('td',null,duty?Math.round(item.duty*100)+'%':'Not calibrated')
             );
           }))
         )
-      )
+      ):h('div',{className:'app-empty-state'},h('strong',null,'Machine parameters are empty'), 'Register the equipment included in this model.')
     )
   );
 }
 
 // ── OPTIMIZER ─────────────────────────────────────────────────────────────────
 function Optimizer(p){
-  var f=p.factory||MF,s=p.schedule||MS;
-  var tariff=Array.from({length:24},function(_,h2){return{h:h2,period:h2<6?'Off-Peak':h2>=18&&h2<22?'Peak':'Shoulder',rate:h2<6?5.2:h2>=18&&h2<22?11.8:8.5};});
-  var shiftable=f.machines.filter(function(m){return m.process_type==='shiftable';});
-  var savings=s.estimated_daily_savings||9420;
-  return h('div',{style:{display:'flex',flexDirection:'column',gap:18}},
-    h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center'}},
-      h('p',{style:{fontSize:12,color:'#475569'}},'MILP constrained scheduling · Production throughput held fixed'),
-      h(Btn,{onClick:p.onOptimize,loading:p.optimizing,v:'primary'},'▶ Run Optimization')
-    ),
-    h('div',{style:{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14}},
-      h(KPI,{label:'Daily Savings',value:inr(savings),sub:'vs. baseline',icon:'💰',color:'green'}),
-      h(KPI,{label:'Monthly',value:inr(savings*30),sub:fmt(s.savings_percent)+'% reduction',icon:'📉',color:'green'}),
-      h(KPI,{label:'Annual',value:inr(savings*365),sub:'Zero hardware cost',icon:'🏦',color:'blue'}),
-      h(KPI,{label:'CO₂ Reduction',value:((savings/8.5)*.82).toFixed(0)+' kg/day',sub:'Off-peak shift',icon:'🌱',color:'blue'})
-    ),
-    h(Card,null,
-      h(SH,{title:'Tariff Heatmap',sub:'Red=Peak ₹11.8 · Yellow=Shoulder ₹8.5 · Green=Off-Peak ₹5.2 /kWh'}),
-      h('div',{style:{display:'flex',gap:2,height:30,borderRadius:6,overflow:'hidden',marginBottom:6}},
-        tariff.map(function(t){return h('div',{key:t.h,style:{flex:1,background:t.period==='Peak'?'#450a0a':t.period==='Shoulder'?'#422006':'#052e16'},title:t.h+':00 '+t.period});})
-      )
-    ),
-    h(Card,null,
-      h(SH,{title:'Optimised Schedule',sub:'Green=ON off-peak · Red=ON peak · Dark=OFF'}),
-      h('div',{style:{overflowX:'auto'}},
-        h('div',{style:{minWidth:'max-content'}},
-          h('div',{style:{display:'flex',marginBottom:3}},
-            h('div',{style:{width:120,flexShrink:0}}),
-            tariff.map(function(t){return h('div',{key:t.h,style:{width:20,textAlign:'center',fontSize:8,color:t.period==='Peak'?'#ef4444':t.period==='Shoulder'?'#f59e0b':'#22c55e'}},t.h%3===0?t.h:'');})
-          ),
-          shiftable.map(function(m){
-            var sched=s.hourly_schedule&&s.hourly_schedule[m.id]||Array.from({length:24},function(_,i){return i>=6&&i<22?1:0;});
-            return h('div',{key:m.id,style:{display:'flex',alignItems:'center',marginBottom:2}},
-              h('div',{style:{width:120,flexShrink:0,fontSize:10,color:'#64748b',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',paddingRight:5}},m.name),
-              tariff.map(function(t){var on=sched[t.h]===1;return h('div',{key:t.h,style:{width:18,height:18,marginRight:2,borderRadius:2,background:on?(t.period==='Peak'?'#7f1d1d':t.period==='Shoulder'?'#78350f':'#14532d'):'#1e293b',border:'1px solid '+(on?(t.period==='Peak'?'#ef4444':t.period==='Shoulder'?'#f59e0b':'#22c55e'):'transparent')}});})
-            );
-          })
+  var f=p.factory||{},machines=Array.isArray(f.machines)?f.machines:[],s=p.schedule;
+  var canOptimize=!p.isDemo&&Boolean(f.id)&&machines.length>0;
+  var rows=s&&s.hourly_schedule?Object.keys(s.hourly_schedule).map(function(id){return{machine:machines.find(function(m){return String(m.id)===String(id);}),id:id,hours:s.hourly_schedule[id]};}).filter(function(row){return row.machine;}):[];
+  return h('div',{style:{display:'flex',flexDirection:'column',gap:14}},
+    h('div',{className:'app-model-heading'},h('div',null,h('h2',null,'Schedule optimizer'),h('p',null,'Schedules are calculated from the selected factory model. Review the saved result before applying it operationally.')),h(Btn,{onClick:p.onOptimize,loading:p.optimizing,disabled:!canOptimize,v:'primary'},h(Icon,{name:'play',size:14}),'Run optimization')),
+    p.isDemo&&h('div',{className:'app-data-notice'},h('span',{className:'app-sample-tag'},'Sample workspace'),h('span',null,'Optimization is disabled for the illustrative factory. Connect a saved factory model to calculate a schedule.')),
+    !s?h('div',{className:'app-empty-state'},h('strong',null,'No saved optimization result'),canOptimize?'Run optimization to generate a schedule for this factory.':'Register a factory and its machines before generating a schedule.'):
+      h('div',null,
+        h('div',{style:{display:'grid',gridTemplateColumns:'repeat(3,minmax(0,1fr))',gap:12,marginBottom:14}},
+          h(KPI,{label:'Baseline daily cost',value:inr(s.baseline_daily_cost),icon:'bank',color:'blue'}),
+          h(KPI,{label:'Optimized daily cost',value:inr(s.optimized_daily_cost),icon:'trending-down',color:'green'}),
+          h(KPI,{label:'Estimated daily savings',value:inr(s.estimated_daily_savings),sub:s.savings_percent==null?'':'Model estimate · '+fmt(s.savings_percent)+'%',icon:'target',color:'amber'})
+        ),
+        h(Card,null,h(SH,{title:'Saved machine schedule',sub:'Hourly on/off state returned by the optimizer; hours are local schedule hours.'}),
+          rows.length?h('div',{style:{overflowX:'auto'}},
+            h('table',{className:'app-machine-table'},
+              h('thead',null,h('tr',null,[h('th',{key:'machine',style:{textAlign:'left'}},'Machine'),Array.from({length:24},function(_,hour){return h('th',{key:hour,style:{textAlign:'center',minWidth:25}},hour%3===0?String(hour).padStart(2,'0'):'');})])),
+              h('tbody',null,rows.map(function(row){return h('tr',{key:row.id},h('td',{style:{fontWeight:600}},row.machine.name),Array.from({length:24},function(_,hour){var active=Array.isArray(row.hours)&&Number(row.hours[hour])===1;return h('td',{key:hour,'aria-label':row.machine.name+' at '+hour+':00: '+(active?'on':'off'),style:{textAlign:'center',color:active?'#426b52':'#a1adb2'}},active?'●':'–');}));}))
+            )
+          ):h('div',{className:'app-empty-state'},h('strong',null,'No machine-level schedule is available'),'The saved result contains no hourly schedule for the registered machines.')
         )
       )
-    ),
-    h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}},
-      h(Card,null,
-        h(SH,{title:'Cost Comparison (Daily ₹)'}),
-        h(RC.ResponsiveContainer,{width:'100%',height:160},
-          h(RC.BarChart,{data:[{name:'Baseline',cost:Math.round(s.baseline_daily_cost||67840)},{name:'Optimised',cost:Math.round(s.optimized_daily_cost||58420)}],margin:{top:5,right:5,left:-10,bottom:0}},
-            h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#1e293b'}),
-            h(RC.XAxis,{dataKey:'name',tick:{fill:'#475569',fontSize:11}}),
-            h(RC.YAxis,{tick:{fill:'#475569',fontSize:10}}),
-            h(RC.Tooltip,{contentStyle:{background:'#0a0f1e',border:'1px solid #1e293b',borderRadius:8},formatter:function(v){return['₹'+v.toLocaleString('en-IN'),'Cost'];}}),
-            h(RC.Bar,{dataKey:'cost',radius:[4,4,0,0]},h(RC.Cell,{fill:'#334155'}),h(RC.Cell,{fill:'#16a34a'}))
-          )
-        )
-      ),
-      h(Card,null,
-        h(SH,{title:'Key Schedule Changes'}),
-        h('div',{style:{display:'flex',flexDirection:'column',gap:8}},
-          [{m:'Dyeing Vat',f:'2 PM–12 AM',t:'10 PM–8 AM',s:10260},{m:'Air Compressor A',f:'6 AM–10 PM',t:'12 AM–6 AM',s:3420},{m:'Utility Pump',f:'8 AM–8 PM',t:'10 PM–4 AM',s:2740}]
-          .map(function(c,i){return h('div',{key:i,style:{background:'#1e293b',borderRadius:7,padding:'8px 12px'}},h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:2}},h('span',{style:{fontSize:12,fontWeight:600,color:'#22c55e'}},c.m),h('span',{style:{fontSize:11,color:'#86efac',fontWeight:500}},'+'+inr(c.s)+'/mo')),h('div',{style:{fontSize:11,color:'#64748b'}},c.f+' → '+c.t));})
-        )
-      )
-    )
   );
 }
 
 // ── BENCHMARKING ──────────────────────────────────────────────────────────────
 function Benchmark(p){
-  var f=p.factory||MF;
-  var ss=useState('textile'),sector=ss[0],setSector=ss[1];
-  var sd=useState([]),data=sd[0],setData=sd[1];
-  var sl=useState(true),loading=sl[0],setLoading=sl[1];
-  var MB2=Array.from({length:15},function(_,i){return{id:'SME-'+String(i+1).padStart(3,'0'),sec_kwh_per_unit:+(2.4+Math.sin(i*1.7)*.9+Math.cos(i*.8)*.4).toFixed(3),sector:'textile',monthly_kwh:60000+i*4200,is_current_factory:i===7};});
-
-  useEffect(function(){
-    setLoading(true);
-    api.get('/benchmark/cluster?sector='+sector)
-      .then(function(res){
-        var mySec=+((f.latest_bill&&f.latest_bill.total_kwh||84200)/26000).toFixed(3);
-        setData(res.concat([{id:'YOU',sec_kwh_per_unit:mySec,sector:sector,monthly_kwh:84200,is_current_factory:true}]));
-      })
-      .catch(function(){setData(MB2);})
-      .finally(function(){setLoading(false);});
-  },[sector]);
-
-  var sorted=data.slice().sort(function(a,b){return a.sec_kwh_per_unit-b.sec_kwh_per_unit;});
-  var me=data.find(function(d){return d.is_current_factory;});
-  var mySec=me&&me.sec_kwh_per_unit||3.24;
-  var avg=data.length?data.reduce(function(s,d){return s+d.sec_kwh_per_unit;},0)/data.length:3.2;
-  var pct=Math.round(sorted.findIndex(function(d){return d.is_current_factory;})/Math.max(sorted.length,1)*100);
-  var vsAvg=((mySec-avg)/avg*100).toFixed(1);
-  var barData=sorted.map(function(d){return{name:d.id,sec:d.sec_kwh_per_unit,fill:d.is_current_factory?'#22c55e':'#334155'};});
-
-  return h('div',{style:{display:'flex',flexDirection:'column',gap:18}},
-    h('div',{style:{display:'flex',gap:10,alignItems:'center'}},
-      h('label',{style:{fontSize:12,color:'#64748b'}},'Sector:'),
-      h('select',{value:sector,onChange:function(e){setSector(e.target.value);},style:{background:'#0f172a',border:'1px solid #1e293b',color:'#94a3b8',borderRadius:7,padding:'5px 10px',fontSize:12}},
-        ['textile','foundry','ceramic','food'].map(function(s2){return h('option',{key:s2,value:s2},s2.charAt(0).toUpperCase()+s2.slice(1));})
-      )
-    ),
-    h('div',{style:{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14}},
-      h(KPI,{label:'Your SEC',value:mySec+' kWh/kg',icon:'⚡',color:+vsAvg>0?'red':'green'}),
-      h(KPI,{label:'Cluster Average',value:avg.toFixed(2)+' kWh/kg',sub:data.length+' SMEs',icon:'📊',color:'blue'}),
-      h(KPI,{label:'Percentile',value:pct+'th',sub:Math.abs(vsAvg)+'% '+(+vsAvg>0?'above':'below')+' avg',icon:'🏆',color:pct<40?'green':pct<70?'amber':'red'})
-    ),
-    h(Card,null,
-      h(SH,{title:'Cluster SEC Comparison',sub:'Lower is better · Green = your factory'}),
-      loading?h('div',{style:{display:'flex',justifyContent:'center',padding:40}},h(Spin,null)):
-      h(RC.ResponsiveContainer,{width:'100%',height:220},
-        h(RC.BarChart,{data:barData,margin:{top:5,right:5,left:-10,bottom:28}},
-          h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#1e293b'}),
-          h(RC.XAxis,{dataKey:'name',tick:{fill:'#334155',fontSize:9},angle:-40,textAnchor:'end'}),
-          h(RC.YAxis,{tick:{fill:'#334155',fontSize:10}}),
-          h(RC.Tooltip,{contentStyle:{background:'#0a0f1e',border:'1px solid #1e293b',borderRadius:8}}),
-          h(RC.Bar,{dataKey:'sec',radius:[3,3,0,0]},barData.map(function(d,i){return h(RC.Cell,{key:i,fill:d.fill});})),
-          h(RC.ReferenceLine,{y:avg,stroke:'#f59e0b',strokeDasharray:'5 3'})
-        )
-      )
-    ),
-    h(Card,null,
-      h('p',{style:{fontWeight:600,color:'#fff',fontSize:13,marginBottom:6}},+vsAvg>0?'⚠️ '+Math.abs(vsAvg)+'% above cluster average':'✅ '+Math.abs(vsAvg)+'% more efficient than average'),
-      h('p',{style:{fontSize:12,color:'#64748b',lineHeight:1.6}},'🔒 Raw data never leaves your factory. Only calibrated model parameters (duty cycles, SEC) are shared — never bill amounts or machine names. DPDP Act 2023 compliant.')
-    )
+  return h('div',{style:{display:'flex',flexDirection:'column',gap:14}},
+    h('div',{className:'app-model-heading'},h('div',null,h('h2',null,'Benchmarking'),h('p',null,'Compare this model only when a verified, comparable peer dataset is available.'))),
+    h('div',{className:'app-data-notice'},h('span',{className:'app-sample-tag'},'Data limitation'),h('span',null,'The prototype benchmark endpoint returns generated peer records, not verified SME observations. Comparative charts and rankings are therefore withheld rather than presented as measured industry data.')),
+    h('div',{className:'app-empty-state'},h('strong',null,'No verified benchmark dataset connected'),'A defensible SEC comparison also requires a comparable production-output denominator, which is not part of the current factory bill and machine records.')
   );
 }
 
 // ── COMPLIANCE ────────────────────────────────────────────────────────────────
 function Compliance(p){
-  var f=p.factory||MF;
+  var f=p.factory||{};
   var sd=useState(null),dpr=sd[0],setDpr=sd[1];
   var sl=useState(true),loading=sl[0],setLoading=sl[1];
   var sc=useState(450000),loanCost=sc[0],setLoanCost=sc[1];
   useEffect(function(){
-    api.get('/compliance/dpr/'+f.id).then(setDpr).catch(function(){setDpr({factory_name:f.name,factory_sector:f.sector,generated_at:new Date().toISOString(),executive_summary:{annual_energy_kwh:1010400,annual_bill_inr:8588400,potential_savings_pct:15,potential_annual_savings_inr:1288260},adeetie_loan_details:{loan_amount_inr:450000,interest_subsidy_amount_inr:54000,monthly_emi_inr:12500,udyam_number:f.udyam_number},cbam_footprint:{scope2_kg_co2:828528,total_annual_co2_ton:829,co2_reduction_ton_pa:124}});}).finally(function(){setLoading(false);});
-  },[f.id]);
+    if(p.isDemo||!f.id){setDpr(null);setLoading(false);return;}
+    setLoading(true);
+    api.get('/compliance/dpr/'+f.id).then(setDpr).catch(function(){setDpr(null);}).finally(function(){setLoading(false);});
+  },[f.id,p.isDemo]);
   if(loading)return h('div',{style:{display:'flex',justifyContent:'center',padding:60}},h(Spin,null));
+  if(p.isDemo||!dpr)return h('div',{style:{display:'flex',flexDirection:'column',gap:14}},
+    h('div',{className:'app-model-heading'},h('div',null,h('h2',null,'Compliance & DPR'),h('p',null,'Review model-derived energy estimates and supporting inputs.'))),
+    h('div',{className:'app-data-notice'},h('span',{className:'app-sample-tag'},p.isDemo?'Sample workspace':'Unavailable'),h('span',null,p.isDemo?'Compliance estimates are not shown for the illustrative sample model.':'A DPR could not be generated. Confirm that the selected factory has a bill and calibration record.')),
+    h('div',{className:'app-empty-state'},h('strong',null,'No verified report available'),'The report generator includes fixed assumptions and is not a verified funding, carbon, or regulatory assessment.')
+  );
+  if(!f.latest_bill)return h('div',{className:'app-empty-state'},h('strong',null,'Bill required'),'Upload an electricity bill before generating an energy and compliance estimate.');
   var d=dpr,es=d.executive_summary,loan=d.adeetie_loan_details,cbam=d.cbam_footprint;
   return h('div',{style:{display:'flex',flexDirection:'column',gap:18}},
+    h('div',{className:'app-data-notice'},h('span',{className:'app-sample-tag'},'Indicative estimate'),h('span',null,'This report uses fixed assumptions in the prototype service (including 15% potential savings and ₹8.50/kWh average tariff). It is not a verified DPR, funding decision or regulatory submission.')),
     h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center'}},
       h('p',{style:{fontSize:12,color:'#475569'}},'Auto-generated from bill OCR + calibration · Pre-filled ADEETIE & BEE format'),
-      h(Btn,{onClick:function(){window.print();},v:'secondary'},'🖨 Print PDF')
+      h(Btn,{onClick:function(){window.print();},v:'secondary'},h(Icon,{name:'printer',size:14}),'Print PDF')
     ),
     h(Card,null,
-      h('div',{style:{display:'flex',gap:10,alignItems:'center',marginBottom:14}},h('span',{style:{fontSize:24}},'📋'),h('div',null,h('h2',{style:{fontSize:14,fontWeight:700,color:'#fff',margin:0}},'DPR — '+d.factory_name),h('p',{style:{fontSize:11,color:'#475569',margin:0}},d.factory_sector+' · '+new Date(d.generated_at).toLocaleDateString('en-IN')))),
+      h('div',{style:{display:'flex',gap:10,alignItems:'center',marginBottom:14}},h(Icon,{name:'clipboard',size:22}),h('div',null,h('h2',{style:{fontSize:14,fontWeight:700,color:'#fff',margin:0}},'DPR — '+d.factory_name),h('p',{style:{fontSize:11,color:'#475569',margin:0}},d.factory_sector+' · '+new Date(d.generated_at).toLocaleDateString('en-IN')))),
       h('div',{style:{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10}},
-        [['Annual Energy',((es.annual_energy_kwh||0)/1000).toFixed(0)+' MWh'],['Annual Bill',inr(es.annual_bill_inr)],['Savings Potential',(es.potential_savings_pct||15)+'%'],['Annual Savings',inr(es.potential_annual_savings_inr)]]
+        [['Annual Energy',((es.annual_energy_kwh||0)/1000).toFixed(0)+' MWh'],['Annual Bill',inr(es.annual_bill_inr)],['Savings Potential',fmt(es.potential_savings_pct)+'%'],['Annual Savings',inr(es.potential_annual_savings_inr)]]
         .map(function(x){return h('div',{key:x[0],style:{background:'#1e293b',borderRadius:8,padding:10}},h('div',{style:{fontSize:10,color:'#475569',marginBottom:2}},x[0]),h('div',{style:{fontSize:12,fontWeight:700,color:'#22c55e'}},x[1]));})
       )
     ),
@@ -484,7 +482,7 @@ function Compliance(p){
       h(Card,null,
         h(SH,{title:'ADEETIE Loan Pre-Application'}),
         h('div',{style:{background:'#052e16',border:'1px solid #14532d',borderRadius:8,padding:10,marginBottom:10,fontSize:12}},
-          ['Max loan: ₹50 lakh','4% interest subsidy','3-year repayment','Eligible: Udyam-registered MSMEs'].map(function(t){return h('div',{key:t,style:{color:'#4ade80',marginBottom:2}},'✓ '+t);})
+          ['Max loan: ₹50 lakh','4% interest subsidy','3-year repayment','Eligible: Udyam-registered MSMEs'].map(function(t){return h('div',{key:t,style:{display:'flex',alignItems:'center',gap:5,color:'#4ade80',marginBottom:2}},h(Icon,{name:'check',size:13}),t);})
         ),
         [['Udyam',(loan&&loan.udyam_number)||f.udyam_number||'—'],['Loan',inr(loan&&loan.loan_amount_inr)],['Subsidy (3yr)',inr(loan&&loan.interest_subsidy_amount_inr)],['Monthly EMI',inr(loan&&loan.monthly_emi_inr)]]
         .map(function(r){return h('div',{key:r[0],style:{display:'flex',justifyContent:'space-between',fontSize:12,borderBottom:'1px solid #0f172a',paddingBottom:5,marginBottom:5}},h('span',{style:{color:'#64748b'}},r[0]),h('span',{style:{color:'#e2e8f0',fontWeight:500}},r[1]));})
@@ -502,7 +500,7 @@ function Compliance(p){
     h(Card,null,
       h(SH,{title:'CBAM Carbon Footprint',sub:'CEA Grid Factor 0.82 kg CO₂/kWh · EU Carbon Border Adjustment Mechanism'}),
       h('div',{style:{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10}},
-        [['Scope 1','0 kg CO₂','#22c55e'],['Scope 2',((cbam&&cbam.scope2_kg_co2||828528)/1000).toFixed(0)+' tCO₂/yr','#fbbf24'],['Total',(cbam&&cbam.total_annual_co2_ton||829)+' tCO₂/yr','#f87171'],['Reduction',(cbam&&cbam.co2_reduction_ton_pa||124)+' tCO₂/yr','#22c55e']]
+        [['Scope 1',cbam?fmt(cbam.scope1_kg_co2,0)+' kg CO₂':'—','#22c55e'],['Scope 2',cbam?fmt(cbam.scope2_kg_co2/1000,0)+' tCO₂/yr':'—','#fbbf24'],['Total',cbam?fmt(cbam.total_annual_co2_ton,0)+' tCO₂/yr':'—','#f87171'],['Reduction',cbam?fmt(cbam.co2_reduction_ton_pa,0)+' tCO₂/yr':'—','#22c55e']]
         .map(function(x){return h('div',{key:x[0],style:{background:'#1e293b',borderRadius:8,padding:10,textAlign:'center'}},h('div',{style:{fontSize:10,color:'#475569',marginBottom:3}},x[0]),h('div',{style:{fontSize:12,fontWeight:700,color:x[2]}},x[1]));})
       )
     )
@@ -511,40 +509,35 @@ function Compliance(p){
 
 // ── ALERTS ────────────────────────────────────────────────────────────────────
 function Alerts(p){
-  var f=p.factory||MF;
-  var sl=useState('hindi'),lang=sl[0],setLang=sl[1];
+  var f=p.factory||{};
+  var sm=useState(''),message=sm[0],setMessage=sm[1];
+  var sw=useState(''),whatsappText=sw[0],setWhatsappText=sw[1];
   var ss=useState(false),sending=ss[0],setSending=ss[1];
-  var sh=useState([{ts:'2026-10-04 07:00',msg:'आज रात 10 बजे के बाद पंप चलाएं',ch:'WhatsApp+Voice',st:'Delivered'}]),hist=sh[0],setHist=sh[1];
-  var MSGS={hindi:{today:'आज रात 10 बजे के बाद पंप चलाएं — ₹800 की बचत होगी',wa:'SME-Twin से ऊर्जा सलाह:\n⚡ डाइंग वैट रात 10 बजे के बाद चलाएं\n💰 बचत: ₹800 आज\n— SME-Twin'},marathi:{today:'आज रात्री 10 नंतर पंप चालवा — ₹800 ची बचत होईल',wa:'SME-Twin कडून:\n⚡ डाइंग व्हॅट रात्री 10 नंतर\n💰 बचत: ₹800 आज'},gujarati:{today:'આજે રાત્રે 10 પછી પંપ ચલાવો — ₹800 ની બચત',wa:'SME-Twin:\n⚡ ડાઇંગ વૅટ રાત્રે 10 પછી\n💰 બચત: ₹800 આજ'}};
-  var msg=MSGS[lang]||MSGS.hindi;
-  function send(type){
-    setSending(true);
-    api.post('/notify/supervisor',{factory_id:f.id,message_hindi:msg.today,send_whatsapp:type!=='voice',alert_text:msg.wa}).catch(function(){}).finally(function(){setHist(function(h2){return [{ts:new Date().toLocaleString('en-IN'),msg:msg.today,ch:type==='voice'?'Voice':type==='wa'?'WhatsApp':'Both',st:'Sent'}].concat(h2);});setSending(false);});
+  var sr=useState(null),result=sr[0],setResult=sr[1];
+  var se=useState(''),error=se[0],setError=se[1];
+  function send(){
+    if(!message.trim())return;
+    setSending(true);setError('');setResult(null);
+    api.post('/notify/supervisor',{factory_id:f.id,message_hindi:message.trim(),send_whatsapp:Boolean(whatsappText.trim()),alert_text:whatsappText.trim()||null})
+      .then(function(response){setResult(response);})
+      .catch(function(){setError('Notification was not sent. Verify the messaging service configuration and try again.');})
+      .finally(function(){setSending(false);});
   }
-  return h('div',{style:{display:'flex',flexDirection:'column',gap:18}},
-    h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}},
-      h(Card,null,
-        h(SH,{title:"Today's Alert",sub:'Vernacular voice & WhatsApp to shop-floor supervisors'}),
-        h('div',{style:{display:'flex',gap:6,marginBottom:14}},
-          [['hindi','हिंदी'],['marathi','मराठी'],['gujarati','ગુજ']].map(function(x){return h('button',{key:x[0],onClick:function(){setLang(x[0]);},style:{padding:'5px 12px',borderRadius:7,border:'none',fontSize:12,fontWeight:500,cursor:'pointer',background:lang===x[0]?'#15803d':'#1e293b',color:lang===x[0]?'#fff':'#64748b'}},x[1]);})
-        ),
-        h('div',{style:{background:'#1e293b',borderRadius:9,padding:14,marginBottom:14}},h('p',{style:{fontSize:15,color:'#f1f5f9',fontWeight:500,lineHeight:1.6,marginBottom:6}},msg.today),h('p',{style:{fontSize:12,color:'#22c55e',fontWeight:600}},'💰 ₹800 savings today')),
-        h('div',{style:{display:'flex',gap:7}},h(Btn,{onClick:function(){send('voice');},loading:sending,v:'primary'},'📞 Voice'),h(Btn,{onClick:function(){send('wa');},loading:sending,v:'secondary'},'💬 WhatsApp'),h(Btn,{onClick:function(){send('both');},loading:sending,v:'secondary'},'📡 Both'))
-      ),
-      h(Card,null,
-        h(SH,{title:'WhatsApp Preview'}),
-        h('div',{style:{background:'#0d1117',borderRadius:9,padding:14,minHeight:200,display:'flex',flexDirection:'column',justifyContent:'flex-end',gap:8}},
-          h('div',{style:{display:'flex',justifyContent:'flex-end'}},h('div',{style:{background:'#005c4b',color:'#fff',fontSize:12,borderRadius:'12px 12px 3px 12px',padding:'9px 13px',maxWidth:240,whiteSpace:'pre-line',lineHeight:1.5}},msg.wa,h('div',{style:{fontSize:10,color:'#4fc3a1',textAlign:'right',marginTop:3}},'✓✓ 07:00'))),
-          h('div',{style:{display:'flex',justifyContent:'flex-start'}},h('div',{style:{background:'#1e293b',color:'#f1f5f9',fontSize:12,borderRadius:'12px 12px 12px 3px',padding:'9px 13px',maxWidth:160,lineHeight:1.4}},'ठीक है 🙏',h('div',{style:{fontSize:10,color:'#475569',marginTop:3}},'07:03')))
-        )
-      )
-    ),
+  if(p.isDemo)return h('div',{style:{display:'flex',flexDirection:'column',gap:14}},
+    h('div',{className:'app-model-heading'},h('div',null,h('h2',null,'Supervisor notifications'),h('p',null,'Send an operator-authored message to the registered factory contact.'))),
+    h('div',{className:'app-data-notice'},h('span',{className:'app-sample-tag'},'Sample workspace'),h('span',null,'Notifications are disabled for the illustrative factory; no message will be sent.'))
+  );
+  return h('div',{style:{display:'flex',flexDirection:'column',gap:14}},
+    h('div',{className:'app-model-heading'},h('div',null,h('h2',null,'Supervisor notifications'),h('p',null,'Messages are sent to the phone number registered for '+(f.name||'this factory')+'.'))),
     h(Card,null,
-      h(SH,{title:'Alert History'}),
-      h('table',{style:{width:'100%',fontSize:12,borderCollapse:'collapse'}},
-        h('thead',null,h('tr',{style:{borderBottom:'1px solid #1e293b',color:'#475569',fontSize:11}},['Time','Message','Channel','Status'].map(function(c){return h('th',{key:c,style:{textAlign:'left',padding:'5px 7px',fontWeight:500}},c);}))),
-        h('tbody',null,hist.map(function(a,i){return h('tr',{key:i,style:{borderBottom:'1px solid #0f172a'}},h('td',{style:{padding:'7px',fontSize:10,color:'#475569'}},a.ts),h('td',{style:{padding:'7px',color:'#94a3b8',maxWidth:200,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},a.msg),h('td',{style:{padding:'7px'}},h(Badge,{color:'blue'},a.ch)),h('td',{style:{padding:'7px'}},h(Badge,{color:a.st==='Delivered'||a.st==='Sent'?'green':'slate'},a.st)));} ))
-      )
+      h(SH,{title:'Compose notification',sub:'Voice call uses the first text field. WhatsApp is sent only when the second field is provided.'}),
+      h('label',{style:{display:'block',fontSize:12,fontWeight:600,marginBottom:5}},'Voice message (Hindi)'),
+      h('textarea',{value:message,onChange:function(e){setMessage(e.target.value);},maxLength:2000,rows:3,placeholder:'Enter the message to be spoken on the call.',style:{width:'100%',resize:'vertical',padding:10,border:'1px solid #cfd8dc'}}),
+      h('label',{style:{display:'block',fontSize:12,fontWeight:600,margin:'14px 0 5px'}},'WhatsApp message (optional)'),
+      h('textarea',{value:whatsappText,onChange:function(e){setWhatsappText(e.target.value);},maxLength:2000,rows:3,placeholder:'Enter WhatsApp text, if needed.',style:{width:'100%',resize:'vertical',padding:10,border:'1px solid #cfd8dc'}}),
+      h('div',{style:{display:'flex',alignItems:'center',gap:12,marginTop:12}},h(Btn,{onClick:send,loading:sending,disabled:!f.id||!message.trim(),v:'primary'},h(Icon,{name:'phone',size:14}),'Send notification'),h('span',{style:{fontSize:11,color:'#667984'}},f.phone_number||'No registered phone number')),
+      error&&h('p',{role:'alert',style:{fontSize:12,color:'#9b3838',marginTop:10}},error),
+      result&&h('div',{role:'status',className:'app-data-notice',style:{marginTop:12}},h('span',{className:'app-sample-tag'},'Request accepted'),h('span',null,'Voice call reference: '+result.call_sid+(result.whatsapp_sid?' · WhatsApp reference: '+result.whatsapp_sid:'')+(result.whatsapp_error?' · '+result.whatsapp_error:'')))
     )
   );
 }
@@ -561,16 +554,20 @@ function Onboarding(p){
   var smc=useState([]),machines=smc[0],setMachines=smc[1];
   var scr=useState(null),calResult=scr[0],setCalResult=scr[1];
   var scal=useState(false),calibrating=scal[0],setCalibrating=scal[1];
+  var smd=useState({name:'',rated_kw:'',process_type:'shiftable',max_daily_hours:'24'}),machineDraft=smd[0],setMachineDraft=smd[1];
+  var serr=useState(''),error=serr[0],setError=serr[1];
 
-  function reg(){setLoading(true);var ph=form.phone_number.startsWith('+')?form.phone_number:('+91'+form.phone_number.replace(/\s/g,''));api.post('/factory',Object.assign({},form,{phone_number:ph})).then(function(r){setFactory(r);setStep(2);}).catch(function(){setFactory(Object.assign({},MF,form,{id:'demo-'+Date.now()}));setMachines(MF.machines);setStep(2);}).finally(function(){setLoading(false);});}
-  function uploadBill(){if(!billFile)return;setLoading(true);var fd=new FormData();fd.append('factory_id',factory.id);fd.append('billing_month',billMonth);fd.append('image',billFile);api.postForm('/bill/upload',fd).then(function(r){setOcr({total_kwh:r.total_kwh,peak_demand_kva:r.peak_demand_kva});return api.get('/factory/'+factory.id+'/machines').then(setMachines).catch(function(){setMachines(MF.machines);});}).catch(function(){setOcr({total_kwh:84200,peak_demand_kva:320});setMachines(MF.machines);}).finally(function(){setLoading(false);setStep(3);});}
-  function calibrate(){setCalibrating(true);api.post('/twin/calibrate/'+factory.id,{}).then(function(r){setCalResult(r);setTimeout(function(){if(p.onFactoryCreated)p.onFactoryCreated(Object.assign({},factory,{latest_calibration:r,machines:machines}));},1200);}).catch(function(){setCalResult({simulation_error_pct:3.2});}).finally(function(){setCalibrating(false);});}
+  function reg(){setError('');setLoading(true);var ph=form.phone_number.startsWith('+')?form.phone_number:('+91'+form.phone_number.replace(/\s/g,''));api.post('/factory',Object.assign({},form,{phone_number:ph})).then(function(r){setFactory(r);setStep(2);}).catch(function(){setError('Factory registration failed. Check the details and service connection, then try again.');}).finally(function(){setLoading(false);});}
+  function uploadBill(){if(!billFile||!factory)return;setError('');setLoading(true);var fd=new FormData();fd.append('factory_id',factory.id);fd.append('billing_month',billMonth);fd.append('image',billFile);api.postForm('/bill/upload',fd).then(function(r){return api.get('/factory/'+factory.id+'/machines').then(function(machineRows){setOcr({total_kwh:r.total_kwh,peak_demand_kva:r.peak_demand_kva});setMachines(machineRows);setStep(3);});}).catch(function(){setError('Bill upload or extraction failed. No sample readings were substituted.');}).finally(function(){setLoading(false);});}
+  function addMachine(){if(!factory||!machineDraft.name||!Number(machineDraft.rated_kw))return;setError('');setLoading(true);api.post('/factory/'+factory.id+'/machines',Object.assign({},machineDraft,{rated_kw:Number(machineDraft.rated_kw),max_daily_hours:Number(machineDraft.max_daily_hours)})).then(function(machine){setMachines(function(rows){return rows.concat([machine]);});setMachineDraft({name:'',rated_kw:'',process_type:'shiftable',max_daily_hours:'24'});}).catch(function(){setError('Machine could not be added. Check the name and rated power.');}).finally(function(){setLoading(false);});}
+  function calibrate(){if(!factory||!ocr||!machines.length)return;setError('');setCalibrating(true);api.post('/twin/calibrate/'+factory.id,{}).then(function(r){setCalResult(r);setTimeout(function(){if(p.onFactoryCreated)p.onFactoryCreated(factory);},900);}).catch(function(){setError('Calibration failed. Confirm that a bill and machine records are saved.');}).finally(function(){setCalibrating(false);});}
 
   var STEPS=['Factory','Bill','Machines','Production','Calibrate'];
   return h(Card,{style:{maxWidth:520,margin:'0 auto'}},
     h(SH,{title:'Onboarding Wizard',sub:'Zero-hardware setup · ~10 minutes'}),
+    error&&h('div',{role:'alert',style:{padding:10,marginBottom:12,border:'1px solid #e2c8c4',background:'#fbf1ef',color:'#873d35',fontSize:12}},error),
     h('div',{style:{display:'flex',alignItems:'center',gap:4,marginBottom:20,flexWrap:'wrap'}},
-      STEPS.map(function(s,i){return h('div',{key:i,style:{display:'flex',alignItems:'center',gap:4}},h('div',{style:{width:22,height:22,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,background:i+1<step?'#15803d':i+1===step?'#16a34a':'#1e293b',color:i+1<=step?'#fff':'#475569'}},i+1<step?'✓':i+1),h('span',{style:{fontSize:11,color:i+1===step?'#22c55e':i+1<step?'#475569':'#334155'}},s),i<STEPS.length-1&&h('div',{style:{width:12,height:1,background:i+1<step?'#15803d':'#1e293b'}}));})
+      STEPS.map(function(s,i){return h('div',{key:i,style:{display:'flex',alignItems:'center',gap:4}},h('div',{style:{width:22,height:22,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,background:i+1<step?'#15803d':i+1===step?'#16a34a':'#1e293b',color:i+1<=step?'#fff':'#475569'}},i+1<step?h(Icon,{name:'check',size:12}):i+1),h('span',{style:{fontSize:11,color:i+1===step?'#22c55e':i+1<step?'#475569':'#334155'}},s),i<STEPS.length-1&&h('div',{style:{width:12,height:1,background:i+1<step?'#15803d':'#1e293b'}}));})
     ),
     step===1&&h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
       [['Factory Name *','text','name','e.g. Shree Ganesh Textiles'],['Udyam No.','text','udyam_number','optional'],['Phone *','tel','phone_number','+91 9876543210']].map(function(x){return h('div',{key:x[2]},h('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4,fontWeight:500}},x[0]),h('input',{type:x[1],value:form[x[2]],onChange:function(e){var n=Object.assign({},form);n[x[2]]=e.target.value;setForm(n);},placeholder:x[3],style:{width:'100%',background:'#1e293b',border:'1px solid #334155',color:'#f1f5f9',borderRadius:7,padding:'7px 10px',fontSize:12}}));}),
@@ -579,28 +576,32 @@ function Onboarding(p){
     ),
     step===2&&h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
       h('input',{type:'month',value:billMonth,onChange:function(e){setBillMonth(e.target.value);},style:{background:'#1e293b',border:'1px solid #334155',color:'#f1f5f9',borderRadius:7,padding:'6px 10px',fontSize:12}}),
-      h('div',{onClick:function(){document.getElementById('bfi').click();},style:{border:'2px dashed #1e293b',borderRadius:10,padding:24,textAlign:'center',cursor:'pointer'}},h('div',{style:{fontSize:26,marginBottom:6}},billFile?'📄':'📁'),billFile?h('p',{style:{color:'#22c55e',fontSize:12}},billFile.name):h('p',{style:{color:'#94a3b8',fontSize:12}},'Click to upload electricity bill (JPEG/PNG)'),h('input',{id:'bfi',type:'file',accept:'image/*',style:{display:'none'},onChange:function(e){setBillFile(e.target.files[0]);}})),
-      h('div',{style:{display:'flex',gap:8}},h(Btn,{onClick:uploadBill,loading:loading,disabled:!billFile,v:'primary'},'⬆ Upload →'),h(Btn,{onClick:function(){setOcr({total_kwh:84200,peak_demand_kva:320});setMachines(MF.machines);setStep(3);},v:'ghost'},'Skip (demo)'))
+      h('div',{onClick:function(){document.getElementById('bfi').click();},style:{border:'2px dashed #1e293b',borderRadius:10,padding:24,textAlign:'center',cursor:'pointer'}},h('div',{style:{marginBottom:6,color:'#94a3b8'}},h(Icon,{name:billFile?'file':'folder',size:24})),billFile?h('p',{style:{color:'#22c55e',fontSize:12}},billFile.name):h('p',{style:{color:'#94a3b8',fontSize:12}},'Click to upload electricity bill (JPEG/PNG)'),h('input',{id:'bfi',type:'file',accept:'image/*',style:{display:'none'},onChange:function(e){setBillFile(e.target.files[0]);}})),
+      h('div',{style:{display:'flex',gap:8}},h(Btn,{onClick:uploadBill,loading:loading,disabled:!billFile,v:'primary'},h(Icon,{name:'upload',size:14}),'Upload →'),h(Btn,{onClick:function(){setError('');setOcr(null);setMachines([]);setStep(3);},v:'ghost'},'Continue without bill'))
     ),
     step===3&&h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
-      ocr&&h('div',{style:{background:'#1e3a5f',border:'1px solid #1e40af',borderRadius:7,padding:8,fontSize:11,color:'#93c5fd'}},'✓ OCR: '+(ocr.total_kwh||0).toLocaleString('en-IN')+' kWh · '+ocr.peak_demand_kva+' kVA'),
+      ocr&&h('div',{style:{display:'flex',alignItems:'center',gap:5,background:'#1e3a5f',border:'1px solid #1e40af',borderRadius:7,padding:8,fontSize:11,color:'#93c5fd'}},h(Icon,{name:'check',size:13}),'OCR: '+(ocr.total_kwh||0).toLocaleString('en-IN')+' kWh · '+ocr.peak_demand_kva+' kVA'),
       h('table',{style:{width:'100%',fontSize:12,borderCollapse:'collapse'}},
         h('thead',null,h('tr',{style:{borderBottom:'1px solid #1e293b',color:'#475569',fontSize:11}},['Machine','kW','Type'].map(function(c){return h('th',{key:c,style:{textAlign:'left',padding:'4px 6px',fontWeight:500}},c);}))),
         h('tbody',null,machines.map(function(m,i){return h('tr',{key:m.id||i,style:{borderBottom:'1px solid #0f172a'}},h('td',{style:{padding:'6px',color:'#94a3b8'}},m.name),h('td',{style:{padding:'6px',color:'#64748b'}},m.rated_kw),h('td',{style:{padding:'6px'}},h(Badge,{color:m.process_type==='continuous'?'blue':'slate'},m.process_type)));}))
       ),
+      h('div',{style:{display:'grid',gridTemplateColumns:'minmax(0,2fr) minmax(90px,1fr) minmax(100px,1fr)',gap:7,alignItems:'end'}},
+        h('div',null,h('label',{style:{display:'block',fontSize:11,marginBottom:4}},'Machine name'),h('input',{value:machineDraft.name,onChange:function(e){setMachineDraft(Object.assign({},machineDraft,{name:e.target.value}));},placeholder:'e.g. Air compressor',style:{width:'100%',padding:8}})),
+        h('div',null,h('label',{style:{display:'block',fontSize:11,marginBottom:4}},'Rated kW'),h('input',{type:'number',min:'0.1',step:'0.1',value:machineDraft.rated_kw,onChange:function(e){setMachineDraft(Object.assign({},machineDraft,{rated_kw:e.target.value}));},style:{width:'100%',padding:8}})),
+        h('div',null,h('label',{style:{display:'block',fontSize:11,marginBottom:4}},'Operating type'),h('select',{value:machineDraft.process_type,onChange:function(e){setMachineDraft(Object.assign({},machineDraft,{process_type:e.target.value}));},style:{width:'100%',padding:8}},h('option',{value:'shiftable'},'Shiftable'),h('option',{value:'continuous'},'Continuous'))),
+        h('div',null,h('label',{style:{display:'block',fontSize:11,marginBottom:4}},'Maximum hours/day'),h('input',{type:'number',min:'0.1',max:'24',step:'0.1',value:machineDraft.max_daily_hours,onChange:function(e){setMachineDraft(Object.assign({},machineDraft,{max_daily_hours:e.target.value}));},style:{width:'100%',padding:8}})),
+        h(Btn,{onClick:addMachine,loading:loading,disabled:!machineDraft.name||!Number(machineDraft.rated_kw),v:'secondary'},'Add machine')
+      ),
       h(Btn,{onClick:function(){setStep(4);},v:'primary'},'Confirm →')
     ),
     step===4&&h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
-      h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}},
-        h('div',null,h('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'Daily Output'),h('input',{type:'number',placeholder:'e.g. 850',style:{width:'100%',background:'#1e293b',border:'1px solid #334155',color:'#f1f5f9',borderRadius:7,padding:'7px 10px',fontSize:12}})),
-        h('div',null,h('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'Unit'),h('select',{style:{width:'100%',background:'#1e293b',border:'1px solid #334155',color:'#f1f5f9',borderRadius:7,padding:'7px 10px',fontSize:12}},['kg','ton','pieces','litres'].map(function(u){return h('option',{key:u},u);})))
-      ),
+      h('div',{className:'app-empty-state'},h('strong',null,'Production output is not stored yet'),'Production quantity and unit are not currently inputs to this digital twin. This step does not collect or save those values.'),
       h(Btn,{onClick:function(){setStep(5);},v:'primary'},'Continue →')
     ),
     step===5&&h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
-      h('div',{style:{background:'#1e293b',borderRadius:9,padding:14,fontSize:12,color:'#64748b',lineHeight:1.7}},h('p',{style:{color:'#e2e8f0',fontWeight:600,marginBottom:4}},'🏭 Ready to calibrate'),h('p',null,'Factory: '+(factory&&factory.name)),h('p',null,'Machines: '+machines.length),h('p',{style:{fontSize:10,color:'#334155',marginTop:4}},'scipy.optimize SLSQP calibrates duty cycles against your real bill — no sensors.')),
-      !calResult&&h(Btn,{onClick:calibrate,loading:calibrating,v:'primary'},calibrating?'⚙ Calibrating...':'⚙ Run Calibration'),
-      calResult&&h('div',{style:{background:'#052e16',border:'1px solid #14532d',borderRadius:10,padding:20,textAlign:'center'}},h('div',{style:{fontSize:36,marginBottom:6}},'✅'),h('p',{style:{fontSize:16,fontWeight:700,color:'#86efac',marginBottom:2}},'Twin Calibrated!'),h('p',{style:{fontSize:12,color:'#22c55e'}},'Error: '+fmt(calResult.simulation_error_pct)+'%'))
+      h('div',{style:{background:'#1e293b',borderRadius:9,padding:14,fontSize:12,color:'#64748b',lineHeight:1.7}},h('p',{style:{display:'flex',alignItems:'center',gap:6,color:'#e2e8f0',fontWeight:600,marginBottom:4}},h(Icon,{name:'factory',size:15}),'Ready to calibrate'),h('p',null,'Factory: '+(factory&&factory.name)),h('p',null,'Machines: '+machines.length),h('p',{style:{fontSize:10,color:'#334155',marginTop:4}},'scipy.optimize SLSQP calibrates duty cycles against your real bill — no sensors.')),
+      !calResult&&h(Btn,{onClick:calibrate,loading:calibrating,disabled:!ocr||!machines.length,v:'primary'},h(Icon,{name:'gear',size:14}),calibrating?'Calibrating...':'Run Calibration'),
+      calResult&&h('div',{role:'status',style:{border:'1px solid #d6e2d9',background:'#edf3ef',padding:14}},h('p',{style:{fontWeight:650,margin:'0 0 4px'}},'Calibration completed'),h('p',{style:{fontSize:12,margin:0}},'Bill residual: '+fmt(calResult.simulation_error_pct)+'%'))
     )
   );
 }
@@ -608,42 +609,61 @@ function Onboarding(p){
 // ── APP ROOT ──────────────────────────────────────────────────────────────────
 function App(){
   var su=useState(null),user=su[0],setUser=su[1];
-  var sp=useState('dashboard'),page=sp[0],setPage=sp[1];
+  var sp=useState('twin'),page=sp[0],setPage=sp[1];
   var sf=useState(MF),factory=sf[0],setFactory=sf[1];
   var sfs=useState([MF]),factories=sfs[0],setFactories=sfs[1];
-  var ss=useState(MS),schedule=ss[0],setSchedule=ss[1];
+  var sd=useState(true),isDemo=sd[0],setIsDemo=sd[1];
+  var ss=useState(null),schedule=ss[0],setSchedule=ss[1];
+  var sfl=useState(false),factoryLoading=sfl[0],setFactoryLoading=sfl[1];
   var sc=useState(false),calibrating=sc[0],setCalibrating=sc[1];
   var so=useState(false),optimizing=so[0],setOptimizing=so[1];
   var st=useState([]),toasts=st[0],setToasts=st[1];
 
   function toast(msg,type){var id=Date.now();setToasts(function(t){return t.concat([{id:id,msg:msg,type:type||'success'}]);});setTimeout(function(){setToasts(function(t){return t.filter(function(x){return x.id!==id;});});},3500);}
 
+  function loadFactory(summary){
+    if(!summary||!summary.id)return Promise.resolve();
+    setFactory(summary);
+    setSchedule(null);
+    setFactoryLoading(true);
+    return api.get('/factory/'+summary.id).then(function(detail){
+      setFactory(detail);
+      setIsDemo(false);
+      return api.get('/factory/'+summary.id+'/schedule').then(function(saved){setSchedule(saved);}).catch(function(){setSchedule(null);});
+    }).catch(function(){
+      toast('Could not load factory details. The sample workspace remains active.','error');
+    }).finally(function(){setFactoryLoading(false);});
+  }
+
   useEffect(function(){
     if(!user)return;
-    api.get('/factory').then(function(fs){if(fs&&fs.length){setFactories(fs);setFactory(fs[0]);}}).catch(function(){});
+    api.get('/factory').then(function(fs){
+      if(fs&&fs.length){setFactories(fs);loadFactory(fs[0]);}
+      else{setIsDemo(true);setFactory(MF);setSchedule(null);}
+    }).catch(function(){setIsDemo(true);setFactory(MF);setSchedule(null);toast('Factory API unavailable; the clearly labelled sample workspace is active.','error');});
   },[user?user.role:null]);
 
-  function calibrate(){if(!factory||!factory.id)return;setCalibrating(true);api.post('/twin/calibrate/'+factory.id,{}).then(function(r){setFactory(function(f){return Object.assign({},f,{latest_calibration:r});});toast('Calibrated — '+fmt(r.simulation_error_pct)+'% error');}).catch(function(){toast('Demo calibration','error');setFactory(function(f){return Object.assign({},f,{latest_calibration:MF.latest_calibration});});}).finally(function(){setCalibrating(false);});}
-  function optimize(){if(!factory||!factory.id)return;setOptimizing(true);api.post('/twin/optimize/'+factory.id,{}).then(function(r){setSchedule(r);toast(inr(r.estimated_daily_savings*30)+'/month savings found');}).catch(function(){toast('Demo optimization','error');setSchedule(MS);}).finally(function(){setOptimizing(false);});}
-  function onFactoryCreated(f){setFactories(function(prev){return prev.find(function(x){return x.id===f.id;})?prev.map(function(x){return x.id===f.id?f:x;}):[f].concat(prev);});setFactory(f);setPage('dashboard');toast(f.name+' is live!');}
+  function calibrate(){if(!factory||!factory.id||isDemo)return;setCalibrating(true);api.post('/twin/calibrate/'+factory.id,{}).then(function(){return api.get('/factory/'+factory.id);}).then(function(detail){setFactory(detail);toast('Calibration record updated');}).catch(function(){toast('Calibration failed. Check the factory bill and machine records.','error');}).finally(function(){setCalibrating(false);});}
+  function optimize(){if(!factory||!factory.id||isDemo)return;setOptimizing(true);api.post('/twin/optimize/'+factory.id,{}).then(function(r){setSchedule(r);toast('Schedule optimization completed');}).catch(function(){toast('Optimization failed. Check the model inputs and try again.','error');}).finally(function(){setOptimizing(false);});}
+  function onFactoryCreated(f){setFactories(function(prev){return prev.find(function(x){return x.id===f.id;})?prev.map(function(x){return x.id===f.id?f:x;}):[f].concat(prev);});setIsDemo(false);loadFactory(f);setPage('twin');}
 
   if(!user)return h(LoginPage,{onLogin:setUser});
 
   var pages={
-    dashboard:h(Dashboard,{factory:factory,schedule:schedule}),
-    twin:h(Twin,{factory:factory,onCalibrate:calibrate,calibrating:calibrating}),
-    optimizer:h(Optimizer,{factory:factory,schedule:schedule,onOptimize:optimize,optimizing:optimizing}),
-    benchmark:h(Benchmark,{factory:factory}),
-    compliance:h(Compliance,{factory:factory}),
-    alerts:h(Alerts,{factory:factory}),
+    dashboard:h(Dashboard,{factory:factory,schedule:schedule,isDemo:isDemo,setPage:setPage}),
+    twin:h(Twin,{factory:factory,isDemo:isDemo,loading:factoryLoading,onCalibrate:calibrate,calibrating:calibrating}),
+    optimizer:h(Optimizer,{factory:factory,schedule:schedule,isDemo:isDemo,onOptimize:optimize,optimizing:optimizing}),
+    benchmark:h(Benchmark,{factory:factory,isDemo:isDemo}),
+    compliance:h(Compliance,{factory:factory,isDemo:isDemo}),
+    alerts:h(Alerts,{factory:factory,isDemo:isDemo}),
     onboarding:h(Onboarding,{onFactoryCreated:onFactoryCreated})
   };
 
-  return h('div',{style:{display:'flex',height:'100vh',overflow:'hidden'}},
-    h(Sidebar,{page:page,setPage:setPage,factory:factory,factories:factories,setFactory:setFactory}),
-    h('div',{style:{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}},
-      h(Header,{page:page,factory:factory,user:user,onLogout:function(){setUser(null);}}),
-      h('main',{style:{flex:1,overflowY:'auto',padding:22,background:'#0a0f1e'}},pages[page]||pages.dashboard)
+  return h('div',{className:'app-shell',style:{display:'flex',height:'100vh',overflow:'hidden'}},
+    h(Sidebar,{page:page,setPage:setPage,factory:factory,factories:factories,onFactorySelect:loadFactory,isDemo:isDemo}),
+    h('div',{className:'app-scroll',style:{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}},
+      h(Header,{page:page,factory:factory,user:user,isDemo:isDemo,onLogout:function(){setUser(null);}}),
+      h('main',{className:'app-workspace',style:{flex:1,overflowY:'auto',padding:22,background:'#0a0f1e'}},pages[page]||pages.twin)
     ),
     h(Toast,{toasts:toasts})
   );

@@ -124,6 +124,18 @@ Open it directly in your browser, or use **VS Code Live Server** (right-click â†
 
 The app works fully offline with mock data â€” no backend connection required for demos.
 
+### Deploy to Railway
+
+Deploy this repository as a single Python service; FastAPI serves both the API and the frontend. In Railway, create a project with a PostgreSQL service and add this GitHub repository as a second service. Set the app service start command to:
+
+```sh
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+In the app service variables, set `DATABASE_URL` to a reference to the PostgreSQL service's `DATABASE_URL` (for example, `${{Postgres.DATABASE_URL}}`, replacing `Postgres` with the exact database service name). The app converts Railway's standard `postgres://` or `postgresql://` URL to the `postgresql+asyncpg://` driver URL expected by SQLAlchemy. Keep credentials in Railway variables, never in Git.
+
+Before using the app, run `alembic upgrade head` once with the Railway app service's variables so the database schema exists. In Railway, use the service's shell/run command with the same environment, or configure a pre-deploy migration command if available for your plan. Then deploy and confirm `/api/v1/health` returns `{"status":"ok"}`. Add `ENVIRONMENT=production`; configure `GEMINI_API_KEY` only if bill OCR is needed and Twilio variables only if notifications are needed.
+
 ---
 
 ## API Reference

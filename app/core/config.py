@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Annotated
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,6 +31,15 @@ class Settings(BaseSettings):
         return self.twilio_whatsapp_from.replace(" ", "")
     max_upload_bytes: Annotated[int, Field(gt=0)] = 10 * 1024 * 1024
     peak_demand_power_factor: Annotated[float, Field(gt=0, le=1)] = 0.9
+
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def use_asyncpg_driver(cls, value: object) -> object:
+        if isinstance(value, str):
+            for scheme in ("postgres://", "postgresql://"):
+                if value.startswith(scheme):
+                    return "postgresql+asyncpg://" + value[len(scheme):]
+        return value
 
 
 @lru_cache

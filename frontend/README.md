@@ -1,59 +1,37 @@
-# SME-Twin Frontend
+# SME-Twin frontend
 
-A complete React dashboard for the SME-Twin energy intelligence platform.
+The frontend served by FastAPI is [`index.html`](./index.html). It is a single-file React 18 application that uses the React and Recharts UMD bundles from a CDN; it does not have a separate npm build.
 
-## How to Run
+## Run the application
 
-**No npm, no build step, no Node.js required.**
+Start the backend from the repository root:
 
-### Option 1 — VS Code Live Server (recommended)
-1. Open the `MDM_SMETwin` folder in VS Code
-2. Right-click `frontend/index.html` → **Open with Live Server**
-3. App opens at `http://127.0.0.1:5500/frontend/index.html`
-
-### Option 2 — Direct browser open
-Double-click `frontend/index.html` — works for most pages.  
-*(Note: Bill upload requires a running backend due to browser file API restrictions)*
-
-### Option 3 — Python simple server
-```bash
-# From project root
-.venv/Scripts/python.exe -m http.server 5500
-# Then open http://localhost:5500/frontend/index.html
+```powershell
+.venv\Scripts\uvicorn.exe app.main:app --reload --port 8000
 ```
 
-## Demo Mode
+Open `http://127.0.0.1:8000/`. The frontend uses same-origin `/api/v1` requests, so API calls use the server serving the page.
 
-The app works **fully offline** with realistic mock data:
-- Mock factory: Shree Ganesh Textiles, Surat (textile/spinning)
-- 9 machines: Ring Frames, Compressors, Dyeing Vat, Pump, Lighting
-- Mock savings: ₹34,200/month identified via schedule optimization
-- All pages are functional without a backend connection
+Opening `index.html` directly or serving the frontend from another port does not provide a working backend connection.
 
-## Backend Connection
+## Data and prototype limitations
 
-When the FastAPI backend is running at `http://localhost:8000`, the app automatically connects and uses live data. To start the backend:
+- When no saved factory can be loaded, the UI shows an explicitly labelled illustrative sample workspace. Its factory, bill, machine and calibration values are examples, not measured operations. Mutating operations are disabled for this workspace.
+- Saved factories load their machine inventory, latest bill and calibration record from the API. A saved optimizer result is displayed only when the API has one.
+- The calibration endpoint estimates machine duty cycles against aggregate monthly billed energy. It does not use interval-meter observations, and the frontend does not claim to show actual-versus-predicted time series.
+- The benchmark service returns generated peer records; verified peer comparisons are intentionally withheld in the UI.
+- Compliance/DPR output uses fixed prototype assumptions, including a 15% savings estimate and an average tariff of ₹8.50/kWh. It is labelled indicative and is not a verified funding or regulatory submission.
+- Production output is not currently persisted as a model input.
+- Supervisor notifications require a saved factory and configured notification services. Messages are entered by the operator; the UI does not report delivery unless the API returns a provider reference.
 
-```bash
-.venv/Scripts/uvicorn.exe app.main:app --reload --port 8000
-```
+## Existing sections
 
-## Pages
-
-| Page | Route (sidebar) | Key Features |
-|------|----------------|-------------|
-| Dashboard | `dashboard` | KPI cards, load curve, energy pie, recommendations |
-| Digital Twin | `twin` | Animated SVG factory floor, duty cycle heatmap |
-| Optimizer | `optimizer` | Gantt chart, tariff strip, schedule changes |
-| Benchmarking | `benchmark` | Cluster bar chart, percentile rank, BEE SEC |
-| Compliance | `compliance` | DPR, ADEETIE loan calculator, CBAM footprint |
-| Alerts | `alerts` | Hindi/Marathi/Gujarati WhatsApp + voice |
-| Onboarding | `onboarding` | 5-step wizard: register → bill → machines → calibrate |
-
-## Tech
-
-- **React 18** via unpkg CDN (no npm)
-- **Recharts 2.12** via unpkg CDN (charts)
-- **Tailwind CSS** via CDN (styling)
-- **Babel Standalone** for JSX transpilation in-browser
-- Single file: `app.jsx` (~700 lines, all pages)
+| Section | Purpose |
+|---|---|
+| Dashboard | Bill, calibration and saved-schedule summary; interval-data availability |
+| Digital Twin | Registered machine inventory and available calibration inputs |
+| Optimizer | Run or inspect a saved machine schedule |
+| Benchmarking | Explain the current lack of verified peer data |
+| Compliance & DPR | Show an indicative API-generated report when available |
+| Alerts | Compose and send operator-authored supervisor notifications |
+| Onboarding | Register a factory, upload a bill, add machines and calibrate |
