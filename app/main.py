@@ -33,15 +33,6 @@ app.include_router(router, prefix="/api/v1")
 # Serve the React frontend from /  so the whole app runs on one port (8000)
 _frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 if os.path.isdir(_frontend_dir):
-    # app.jsx must be served with correct MIME type for Babel
-    @app.get("/app.jsx")
-    async def serve_app_jsx():
-        return FileResponse(
-            os.path.join(_frontend_dir, "app.jsx"),
-            media_type="application/javascript",
-            headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
-        )
-
     @app.get("/")
     async def serve_index():
         return FileResponse(

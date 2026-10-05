@@ -38,7 +38,7 @@ MDM_SMETwin/
 │   │   ├── calibration_engine.py  # scipy SLSQP twin calibration
 │   │   ├── scheduler_service.py   # PuLP MILP optimizer
 │   │   ├── ocr_service.py         # Gemini Vision bill OCR
-│   │   ├── notification_service.py# Twilio voice + WhatsApp
+│   │   ├── notification_service.py # Twilio voice + WhatsApp
 │   │   ├── benchmark_service.py   # Federated cluster benchmarking
 │   │   └── compliance_service.py  # DPR / ADEETIE / CBAM generator
 │   └── main.py                    # FastAPI app + CORS
@@ -47,12 +47,15 @@ MDM_SMETwin/
 ├── migrations/
 │   └── versions/
 │       ├── 0001_initial_schema.py
-│       └── 0002_add_optimization_results.py
+│       ├── 0002_add_optimization_results.py
+│       └── 0003_add_weekly_observations.py
 ├── frontend/
-│   ├── index.html                 # CDN shell (React + Recharts + Tailwind)
-│   └── app.jsx                    # Full single-file React app (Babel standalone)
+│   ├── index.html                 # FastAPI-served React application
+│   └── README.md                  # Frontend setup and data limitations
 ├── tests/
 │   └── test_optimization.py
+├── scripts/
+│   └── seed_demo.py               # Idempotent synthetic demo-data preset
 ├── .env.example
 ├── requirements.txt
 └── alembic.ini
@@ -121,13 +124,7 @@ API docs available at: **http://localhost:8000/docs**
 
 ### 6. Open the Frontend
 
-```
-frontend/index.html
-```
-
-Open it directly in your browser, or use **VS Code Live Server** (right-click → Open with Live Server).
-
-The app works fully offline with mock data — no backend connection required for demos.
+Open **http://127.0.0.1:8000/** after starting FastAPI. The frontend is served by the backend and uses its same-origin API. Do not open `frontend/index.html` directly or use Live Server when testing API-backed workflows.
 
 ### Deploy to Railway
 
