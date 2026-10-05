@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import date, datetime
+from enum import Enum
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator, model_validator
 
 from app.models.schema import ProcessType
 
@@ -34,7 +35,7 @@ class MachineDTO(BaseModel):
 
 
 class CalibratedMachineDTO(MachineDTO):
-    duty_cycle: Annotated[float, Field(ge=0.05, le=1.0)]
+    duty_cycle: Annotated[float, Field(ge=0, le=1.0)]
 
 
 class BillResponse(BaseModel):
@@ -54,6 +55,65 @@ class CalibrationResponse(BaseModel):
     calibrated_duty_cycles: dict[str, float]
     simulation_error_pct: float
     timestamp: datetime
+    source_weekly_observation_id: UUID | None = None
+    actual_energy_kwh: float | None = None
+    observed_period_hours: float | None = None
+
+
+class MachineObservationStatus(str, Enum):
+    OPERATIONAL = "operational"
+    DEGRADED = "degraded"
+    DOWN = "down"
+
+
+class WeeklyMachineObservation(BaseModel):
+    machine_id: UUID
+    machine_name: str | None = None
+    status: MachineObservationStatus
+    downtime_hours: Annotated[float, Field(ge=0, le=168)]
+    notes: Annotated[str | None, StringConstraints(strip_whitespace=True, max_length=500)] = None
+
+
+class WeeklyObservationCreate(BaseModel):
+    week_start: date
+    hours_observed: Annotated[float, Field(gt=0, le=168)]
+    total_kwh: Annotated[float, Field(gt=0, le=10_000_000)]
+    production_quantity: Annotated[float | None, Field(ge=0, le=1_000_000_000)] = None
+    production_unit: Annotated[str | None, StringConstraints(strip_whitespace=True, min_length=1, max_length=40)] = None
+    machine_observations: Annotated[list[WeeklyMachineObservation], Field(min_length=1, max_length=500)]
+    notes: Annotated[str | None, StringConstraints(strip_whitespace=True, max_length=2000)] = None
+
+    @field_validator("week_start")
+    @classmethod
+    def validate_week_start(cls, value: date) -> date:
+        if value.weekday() != 0:
+            raise ValueError("week_start must be a Monday")
+        return value
+
+    @model_validator(mode="after")
+    def validate_production_unit(self) -> "WeeklyObservationCreate":
+        if (self.production_quantity is None) != (self.production_unit is None):
+            raise ValueError("production_quantity and production_unit must be provided together")
+        if len({item.machine_id for item in self.machine_observations}) != len(self.machine_observations):
+            raise ValueError("machine_observations must contain each machine at most once")
+        return self
+
+
+class WeeklyObservationResponse(BaseModel):
+    id: UUID
+    factory_id: UUID
+    week_start: date
+    hours_observed: float
+    total_kwh: float
+    production_quantity: float | None
+    production_unit: str | None
+    machine_observations: list[WeeklyMachineObservation]
+    notes: str | None
+    created_at: datetime
+    calibrated_duty_cycles: dict[str, float]
+    simulation_error_pct: float | None
+    alert_required: bool
+    reported_issues: list[str]
 
 
 class ScheduleResponse(BaseModel):

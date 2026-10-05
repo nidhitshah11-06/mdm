@@ -295,7 +295,7 @@ function Dashboard(p){
     h('div',{style:{display:'grid',gridTemplateColumns:'1.4fr 1fr',gap:14}},
       h(Card,null,
         h(SH,{title:'Observation coverage',sub:'Data currently available to this prototype'}),
-        h('div',{className:'app-empty-state'},h('strong',null,'No interval observations are available'), 'The model stores monthly bill totals and machine duty-cycle estimates. It does not yet store time-stamped meter readings, so an actual-versus-predicted time-series comparison cannot be shown.'),
+        h('div',{className:'app-empty-state'},h('strong',null,'No live interval stream is connected'), 'The model can be recalibrated from manually entered weekly aggregate energy and machine-state observations. It does not collect live sensor readings or show an actual-versus-predicted time series.'),
         h('div',{style:{display:'flex',gap:20,flexWrap:'wrap',marginTop:14,fontSize:12}},
           h('span',null,'Bill: ',bill?'Available':'Not uploaded'),
           h('span',null,'Machine records: ',machines.length),
@@ -406,6 +406,124 @@ function Twin(p){
           }))
         )
       ):h('div',{className:'app-empty-state'},h('strong',null,'Machine parameters are empty'), 'Register the equipment included in this model.')
+    )
+  );
+}
+
+function WeeklyCalibration(p){
+  var machines=Array.isArray(p.factory.machines)?p.factory.machines:[];
+  var initialWeek=useState((function(){var d=new Date(),days=((d.getDay()+6)%7)+7;d.setDate(d.getDate()-days);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})()),weekStart=initialWeek[0],setWeekStart=initialWeek[1];
+  var sh=useState('168'),hours=sh[0],setHours=sh[1];
+  var sk=useState(''),kwh=sk[0],setKwh=sk[1];
+  var spq=useState(''),production=spq[0],setProduction=spq[1];
+  var spu=useState('kg'),unit=spu[0],setUnit=spu[1];
+  var sn=useState(''),notes=sn[0],setNotes=sn[1];
+  var sm=useState({}),statuses=sm[0],setStatuses=sm[1];
+  var so=useState([]),observations=so[0],setObservations=so[1];
+  var sl=useState(false),loading=sl[0],setLoading=sl[1];
+  var ss=useState(false),saving=ss[0],setSaving=ss[1];
+  var sa=useState(false),alertSending=sa[0],setAlertSending=sa[1];
+  var si=useState(null),latest=si[0],setLatest=si[1];
+  var serr=useState(''),error=serr[0],setError=serr[1];
+  var smsg=useState(''),message=smsg[0],setMessage=smsg[1];
+
+  useEffect(function(){
+    setStatuses(function(current){var next={};machines.forEach(function(machine){var id=String(machine.id);next[id]=current[id]||{status:'operational',downtime_hours:'0'};});return next;});
+  },[machines.map(function(machine){return machine.id;}).join('|')]);
+
+  function load(){
+    if(!p.factory.id||p.isDemo)return;
+    setLoading(true);setError('');
+    api.get('/factory/'+p.factory.id+'/weekly-observations').then(setObservations)
+      .catch(function(){setError('Could not load weekly observations. Check the database connection and run migrations.');})
+      .finally(function(){setLoading(false);});
+  }
+  useEffect(load,[p.factory.id,p.isDemo]);
+
+  function updateMachine(id,changes){setStatuses(function(current){return Object.assign({},current,{[id]:Object.assign({},current[id],changes)});});}
+  function submit(e){
+    e.preventDefault();
+    if(!weekStart||!kwh||machines.length===0)return;
+    setSaving(true);setError('');setLatest(null);setMessage('');
+    var payload={
+      week_start:weekStart,
+      hours_observed:Number(hours),
+      total_kwh:Number(kwh),
+      production_quantity:production===''?null:Number(production),
+      production_unit:production===''?null:unit,
+      notes:notes.trim()||null,
+      machine_observations:machines.map(function(machine){var state=statuses[String(machine.id)]||{status:'operational',downtime_hours:'0'};return{machine_id:machine.id,status:state.status,downtime_hours:state.status==='down'?Number(hours):Number(state.downtime_hours||0)};})
+    };
+    api.post('/factory/'+p.factory.id+'/weekly-observations',payload).then(function(result){
+      setLatest(result);setObservations(function(rows){return[result].concat(rows);});
+      if(p.onObservationSaved)p.onObservationSaved(result);
+      setKwh('');setProduction('');setNotes('');
+    }).catch(function(){setError('Weekly observation was not saved. Check the date, readings, all machine statuses, and database migration. No sample readings were substituted.');})
+      .finally(function(){setSaving(false);});
+  }
+  function alertSupervisor(){
+    if(!latest||!latest.alert_required)return;
+    setAlertSending(true);setError('');
+    api.post('/notify/supervisor',{factory_id:p.factory.id,message_hindi:'कारखाने में मशीन स्थिति संबंधी समस्या दर्ज हुई है। कृपया SME-Twin में साप्ताहिक विवरण देखें।',send_whatsapp:false})
+      .then(function(response){setMessage('Voice call accepted by notification provider. Reference: '+response.call_sid);})
+      .catch(function(){setError('Supervisor call failed. Confirm a registered phone number and configured Twilio voice service.');})
+      .finally(function(){setAlertSending(false);});
+  }
+
+  if(p.isDemo)return h('div',{className:'app-data-notice'},h('span',{className:'app-sample-tag'},'Sample workspace'),h('span',null,'Weekly records need a connected database and saved factory. Sample data is not accepted or saved. Set up PostgreSQL and run Alembic migrations to enable weekly recalibration.'));
+  return h(Card,{style:{marginTop:14}},
+    h(SH,{title:'Weekly field update',sub:'Enter reported observations; this twin is periodically recalibrated, not connected to live sensors. One submission per factory per week. Submitting recalibrates fleet duty-cycle estimates against weekly kWh and reported machine downtime.'}),
+    error&&h('div',{role:'alert',style:{padding:9,marginBottom:12,border:'1px solid #e2c8c4',background:'#fbf1ef',color:'#873d35',fontSize:12}},error),
+    h('form',{onSubmit:submit},
+      h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(145px,1fr))',gap:10,marginBottom:12}},
+        h('label',{style:{fontSize:11}},'Week starting (Monday)',h('input',{type:'date',value:weekStart,onChange:function(e){setWeekStart(e.target.value);},required:true,style:{display:'block',width:'100%',padding:8,marginTop:4}})),
+        h('label',{style:{fontSize:11}},'Hours represented',h('input',{type:'number',min:'1',max:'168',step:'1',value:hours,onChange:function(e){setHours(e.target.value);},required:true,style:{display:'block',width:'100%',padding:8,marginTop:4}})),
+        h('label',{style:{fontSize:11}},'Observed energy (kWh)',h('input',{type:'number',min:'0.01',step:'0.01',value:kwh,onChange:function(e){setKwh(e.target.value);},required:true,style:{display:'block',width:'100%',padding:8,marginTop:4}})),
+        h('label',{style:{fontSize:11}},'Production quantity (optional)',h('input',{type:'number',min:'0',step:'any',value:production,onChange:function(e){setProduction(e.target.value);},style:{display:'block',width:'100%',padding:8,marginTop:4}})),
+        production!==''&&h('label',{style:{fontSize:11}},'Production unit',h('select',{value:unit,onChange:function(e){setUnit(e.target.value);},style:{display:'block',width:'100%',padding:8,marginTop:4}},['kg','ton','pieces','litres','units'].map(function(value){return h('option',{key:value,value:value},value);})))
+      ),
+      h('div',{style:{overflowX:'auto',marginBottom:12}},
+        h('table',{className:'app-machine-table'},
+          h('thead',null,h('tr',null,['Machine','Rated power','Reported state','Downtime hours'].map(function(label){return h('th',{key:label,style:{textAlign:'left'}},label);}))),
+          h('tbody',null,machines.map(function(machine){
+            var id=String(machine.id),state=statuses[id]||{status:'operational',downtime_hours:'0'};
+            return h('tr',{key:id},
+              h('td',{style:{fontWeight:600}},machine.name),
+              h('td',null,fmt(machine.rated_kw,1)+' kW'),
+              h('td',null,h('select',{value:state.status,onChange:function(e){var value=e.target.value;updateMachine(id,{status:value,downtime_hours:value==='down'?hours:value==='operational'?'0':state.downtime_hours});},style:{padding:6}},h('option',{value:'operational'},'Operational'),h('option',{value:'degraded'},'Degraded'),h('option',{value:'down'},'Down'))),
+              h('td',null,h('input',{type:'number',min:'0',max:hours,step:'0.5',value:state.downtime_hours,onChange:function(e){updateMachine(id,{downtime_hours:e.target.value});},disabled:state.status==='down',style:{width:100,padding:6}}))
+            );
+          }))
+        )
+      ),
+      h('label',{style:{display:'block',fontSize:11}},'Weekly notes (optional)',h('textarea',{value:notes,onChange:function(e){setNotes(e.target.value);},rows:2,maxLength:2000,placeholder:'Reported maintenance, process changes, or context for these readings.',style:{display:'block',width:'100%',resize:'vertical',padding:8,marginTop:4}})),
+      h('div',{style:{display:'flex',alignItems:'center',gap:10,marginTop:12,flexWrap:'wrap'}},
+        h(Btn,{type:'submit',loading:saving,disabled:!kwh||machines.length===0,v:'primary'},h(Icon,{name:'gear',size:14}),'Save observations & recalibrate'),
+        h('span',{style:{fontSize:11,color:'#687983'}},'A down/degraded state or recorded downtime will be flagged for operator review.')
+      )
+    ),
+    latest&&h('div',{style:{marginTop:14,padding:12,border:'1px solid #d9e0e2',background:'#fafbfa'}},
+      h('strong',null,'Weekly calibration saved · '+fmt(latest.simulation_error_pct)+'% fit residual'),
+      h('p',{style:{fontSize:12,margin:'5px 0'}},'Residual measures fit to this entered weekly energy total; it is not independent accuracy validation.'),
+      latest.alert_required&&h('div',null,
+        h('p',{style:{fontSize:12,color:'#795f2c'}},'Reported issues: '+latest.reported_issues.join('; ')),
+        h(Btn,{onClick:alertSupervisor,loading:alertSending,v:'secondary'},h(Icon,{name:'phone',size:14}),'Call registered supervisor'),
+        h('p',{style:{fontSize:10,color:'#687983',margin:'6px 0 0'}},'This button initiates a real voice call; the operator must choose to send it. Requires a registered phone and configured Twilio service.')
+      ),
+      message&&h('p',{role:'status',style:{fontSize:12,color:'#426b52'}},message)
+    ),
+    h('div',{style:{marginTop:18}},
+      h(SH,{title:'Observation history',sub:'Saved weekly energy, reported machine states, and calibration residuals'}),
+      loading?h('div',{className:'app-empty-state'},'Loading saved observations…'):
+      observations.length?h('div',{style:{overflowX:'auto'}},h('table',{className:'app-machine-table'},
+        h('thead',null,h('tr',null,['Week starting','Energy','Hours','Production','Reported issues','Fit residual'].map(function(label){return h('th',{key:label,style:{textAlign:'left'}},label);}))),
+        h('tbody',null,observations.map(function(row){return h('tr',{key:row.id},
+          h('td',null,row.week_start),h('td',null,fmt(row.total_kwh,1)+' kWh'),h('td',null,fmt(row.hours_observed,0)),
+          h('td',null,row.production_quantity==null?'—':fmt(row.production_quantity,1)+' '+row.production_unit),
+          h('td',null,row.reported_issues.length?row.reported_issues.join('; '):'None reported'),
+          h('td',null,row.simulation_error_pct==null?'—':fmt(row.simulation_error_pct)+'%')
+        );}))
+      )):h('div',{className:'app-empty-state'},h('strong',null,'No weekly observations yet'),'Record a completed or partial reporting period above to create the first history entry.')
     )
   );
 }
@@ -645,6 +763,20 @@ function App(){
 
   function calibrate(){if(!factory||!factory.id||isDemo)return;setCalibrating(true);api.post('/twin/calibrate/'+factory.id,{}).then(function(){return api.get('/factory/'+factory.id);}).then(function(detail){setFactory(detail);toast('Calibration record updated');}).catch(function(){toast('Calibration failed. Check the factory bill and machine records.','error');}).finally(function(){setCalibrating(false);});}
   function optimize(){if(!factory||!factory.id||isDemo)return;setOptimizing(true);api.post('/twin/optimize/'+factory.id,{}).then(function(r){setSchedule(r);toast('Schedule optimization completed');}).catch(function(){toast('Optimization failed. Check the model inputs and try again.','error');}).finally(function(){setOptimizing(false);});}
+  function onWeeklyObservationSaved(observation){
+    setFactory(function(current){return Object.assign({},current,{
+      latest_calibration:{
+        calibrated_duty_cycles:observation.calibrated_duty_cycles,
+        simulation_error_pct:observation.simulation_error_pct,
+        timestamp:observation.created_at,
+        source_weekly_observation_id:observation.id,
+        actual_energy_kwh:observation.total_kwh,
+        observed_period_hours:observation.hours_observed
+      }
+    });});
+    setSchedule(null);
+    toast('Weekly observations saved and twin recalibrated');
+  }
   function onFactoryCreated(f){setFactories(function(prev){return prev.find(function(x){return x.id===f.id;})?prev.map(function(x){return x.id===f.id?f:x;}):[f].concat(prev);});setIsDemo(false);loadFactory(f);setPage('twin');}
 
   if(!user)return h(LoginPage,{onLogin:setUser});
@@ -663,7 +795,7 @@ function App(){
     h(Sidebar,{page:page,setPage:setPage,factory:factory,factories:factories,onFactorySelect:loadFactory,isDemo:isDemo}),
     h('div',{className:'app-scroll',style:{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}},
       h(Header,{page:page,factory:factory,user:user,isDemo:isDemo,onLogout:function(){setUser(null);}}),
-      h('main',{className:'app-workspace',style:{flex:1,overflowY:'auto',padding:22,background:'#0a0f1e'}},pages[page]||pages.twin)
+      h('main',{className:'app-workspace',style:{flex:1,overflowY:'auto',padding:22,background:'#0a0f1e'}},page==='twin'?h('div',null,pages.twin,h(WeeklyCalibration,{factory:factory,isDemo:isDemo,onObservationSaved:onWeeklyObservationSaved})):pages[page]||pages.twin)
     ),
     h(Toast,{toasts:toasts})
   );

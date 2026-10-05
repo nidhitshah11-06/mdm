@@ -1,17 +1,19 @@
 import asyncio
 import logging
 import re
+from datetime import date
 from typing import Annotated
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 import pulp
 from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.models.schema import Bill, CalibrationLog, Factory, Machine, OptimizationResult, ProcessType
+from app.models.schema import Bill, CalibrationLog, Factory, Machine, OptimizationResult, ProcessType, WeeklyObservation
 from app.schemas.pydantic_schemas import (
     BillResponse,
     CalibratedMachineDTO,
@@ -27,6 +29,8 @@ from app.schemas.pydantic_schemas import (
     ScheduleResponse,
     SupervisorNotificationRequest,
     SupervisorNotificationResponse,
+    WeeklyObservationCreate,
+    WeeklyObservationResponse,
 )
 from app.services.benchmark_service import generate_cluster_benchmark
 from app.services.calibration_engine import calibrate_factory_twin
@@ -157,6 +161,185 @@ async def calibrate_factory(factory_id: UUID, db: Database) -> CalibrationLog:
     await db.commit()
     await db.refresh(calibration)
     return calibration
+
+
+@router.get(
+    "/factory/{factory_id}/weekly-observations",
+    response_model=list[WeeklyObservationResponse],
+)
+async def list_weekly_observations(factory_id: UUID, db: Database) -> list[dict]:
+    if await db.get(Factory, factory_id) is None:
+        raise HTTPException(status_code=404, detail="Factory not found")
+    result = await db.execute(
+        select(WeeklyObservation, CalibrationLog)
+        .outerjoin(
+            CalibrationLog,
+            CalibrationLog.source_weekly_observation_id == WeeklyObservation.id,
+        )
+        .where(WeeklyObservation.factory_id == factory_id)
+        .order_by(WeeklyObservation.week_start.desc())
+    )
+    entries = []
+    for observation, calibration in result.all():
+        machine_observations = observation.machine_observations
+        issues = [
+            f"{item['machine_name']}: reported {item['status']}"
+            + (f", {item['downtime_hours']:g} hours downtime" if item["downtime_hours"] else "")
+            for item in machine_observations
+            if item["status"] != "operational" or item["downtime_hours"] > 0
+        ]
+        entries.append({
+            "id": observation.id,
+            "factory_id": observation.factory_id,
+            "week_start": observation.week_start,
+            "hours_observed": observation.hours_observed,
+            "total_kwh": observation.total_kwh,
+            "production_quantity": observation.production_quantity,
+            "production_unit": observation.production_unit,
+            "machine_observations": machine_observations,
+            "notes": observation.notes,
+            "created_at": observation.created_at,
+            "calibrated_duty_cycles": calibration.calibrated_duty_cycles if calibration else {},
+            "simulation_error_pct": calibration.simulation_error_pct if calibration else None,
+            "alert_required": bool(issues),
+            "reported_issues": issues,
+        })
+    return entries
+
+
+@router.post(
+    "/factory/{factory_id}/weekly-observations",
+    response_model=WeeklyObservationResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def record_weekly_observation(
+    factory_id: UUID,
+    payload: WeeklyObservationCreate,
+    db: Database,
+) -> dict:
+    factory = await db.get(Factory, factory_id)
+    if factory is None:
+        raise HTTPException(status_code=404, detail="Factory not found")
+    if payload.week_start > date.today():
+        raise HTTPException(status_code=422, detail="week_start cannot be in the future")
+    if any(item.downtime_hours > payload.hours_observed for item in payload.machine_observations):
+        raise HTTPException(status_code=422, detail="Machine downtime cannot exceed hours_observed")
+
+    duplicate = await db.execute(
+        select(WeeklyObservation.id).where(
+            WeeklyObservation.factory_id == factory_id,
+            WeeklyObservation.week_start == payload.week_start,
+        )
+    )
+    if duplicate.scalar_one_or_none() is not None:
+        raise HTTPException(
+            status_code=409,
+            detail="An observation already exists for this factory and week",
+        )
+
+    machine_result = await db.execute(
+        select(Machine).where(Machine.factory_id == factory_id).order_by(Machine.id)
+    )
+    machine_rows = list(machine_result.scalars().all())
+    if not machine_rows:
+        raise HTTPException(status_code=409, detail="Add machine records before weekly calibration")
+    machine_by_id = {machine.id: machine for machine in machine_rows}
+    submitted_by_id = {item.machine_id: item for item in payload.machine_observations}
+    if set(submitted_by_id) != set(machine_by_id):
+        raise HTTPException(
+            status_code=422,
+            detail="Submit one weekly status for every registered machine and no unregistered machines",
+        )
+
+    machine_observations = []
+    duty_bounds = []
+    for machine in machine_rows:
+        item = submitted_by_id[machine.id]
+        if item.status.value == "down" and item.downtime_hours < payload.hours_observed:
+            raise HTTPException(
+                status_code=422,
+                detail=f"{machine.name}: a machine reported down for the week must use full-period downtime",
+            )
+        machine_observations.append({
+            **item.model_dump(mode="json"),
+            "machine_name": machine.name,
+        })
+        availability = max(0.0, 1.0 - item.downtime_hours / payload.hours_observed)
+        duty_bounds.append((0.0, availability))
+
+    machine_dtos = [MachineDTO.model_validate(machine) for machine in machine_rows]
+    try:
+        duty_cycles, error_pct = await asyncio.to_thread(
+            calibrate_factory_twin,
+            machine_dtos,
+            payload.total_kwh,
+            payload.hours_observed,
+            duty_bounds,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        logger.exception("Weekly twin calibration failed for factory %s", factory_id)
+        raise HTTPException(status_code=500, detail="Weekly calibration failed") from exc
+
+    observation_id = uuid4()
+    observation = WeeklyObservation(
+        id=observation_id,
+        factory_id=factory_id,
+        week_start=payload.week_start,
+        hours_observed=payload.hours_observed,
+        total_kwh=payload.total_kwh,
+        production_quantity=payload.production_quantity,
+        production_unit=payload.production_unit,
+        machine_observations=machine_observations,
+        notes=payload.notes,
+    )
+    calibration = CalibrationLog(
+        factory_id=factory_id,
+        calibrated_duty_cycles=duty_cycles,
+        simulation_error_pct=error_pct,
+        source_weekly_observation_id=observation_id,
+        actual_energy_kwh=payload.total_kwh,
+        observed_period_hours=payload.hours_observed,
+    )
+    db.add_all([observation, calibration])
+    try:
+        await db.commit()
+    except IntegrityError as exc:
+        await db.rollback()
+        cause = getattr(exc.orig, "__cause__", None)
+        constraint_name = getattr(exc.orig, "constraint_name", None) or getattr(
+            cause, "constraint_name", None
+        )
+        if constraint_name == "uq_weekly_observation_factory_week":
+            raise HTTPException(
+                status_code=409,
+                detail="An observation already exists for this factory and week",
+            ) from exc
+        raise
+    await db.refresh(observation)
+    issues = [
+        f"{item['machine_name']}: reported {item['status']}"
+        + (f", {item['downtime_hours']:g} hours downtime" if item["downtime_hours"] else "")
+        for item in machine_observations
+        if item["status"] != "operational" or item["downtime_hours"] > 0
+    ]
+    return WeeklyObservationResponse.model_validate({
+        "id": observation.id,
+        "factory_id": observation.factory_id,
+        "week_start": observation.week_start,
+        "hours_observed": observation.hours_observed,
+        "total_kwh": observation.total_kwh,
+        "production_quantity": observation.production_quantity,
+        "production_unit": observation.production_unit,
+        "machine_observations": machine_observations,
+        "notes": observation.notes,
+        "created_at": observation.created_at,
+        "calibrated_duty_cycles": calibration.calibrated_duty_cycles,
+        "simulation_error_pct": calibration.simulation_error_pct,
+        "alert_required": bool(issues),
+        "reported_issues": issues,
+    })
 
 
 @router.post("/twin/optimize/{factory_id}", response_model=ScheduleResponse)

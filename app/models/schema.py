@@ -1,8 +1,8 @@
 import enum
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import DateTime, Enum, Float, ForeignKey, String, Uuid, func
+from sqlalchemy import Date, DateTime, Enum, Float, ForeignKey, String, Text, UniqueConstraint, Uuid, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -33,6 +33,9 @@ class Factory(Base):
         back_populates="factory", cascade="all, delete-orphan"
     )
     calibration_logs: Mapped[list["CalibrationLog"]] = relationship(
+        back_populates="factory", cascade="all, delete-orphan"
+    )
+    weekly_observations: Mapped[list["WeeklyObservation"]] = relationship(
         back_populates="factory", cascade="all, delete-orphan"
     )
     optimization_results: Mapped[list["OptimizationResult"]] = relationship(
@@ -89,11 +92,43 @@ class CalibrationLog(Base):
     )
     calibrated_duty_cycles: Mapped[dict] = mapped_column(JSONB, nullable=False)
     simulation_error_pct: Mapped[float] = mapped_column(Float, nullable=False)
+    source_weekly_observation_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid(as_uuid=True),
+        ForeignKey("weekly_observations.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    actual_energy_kwh: Mapped[float | None] = mapped_column(Float, nullable=True)
+    observed_period_hours: Mapped[float | None] = mapped_column(Float, nullable=True)
     timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
     factory: Mapped[Factory] = relationship(back_populates="calibration_logs")
+
+
+class WeeklyObservation(Base):
+    __tablename__ = "weekly_observations"
+    __table_args__ = (
+        UniqueConstraint("factory_id", "week_start", name="uq_weekly_observation_factory_week"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    factory_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True), ForeignKey("factories.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    week_start: Mapped[date] = mapped_column(Date, nullable=False)
+    hours_observed: Mapped[float] = mapped_column(Float, nullable=False)
+    total_kwh: Mapped[float] = mapped_column(Float, nullable=False)
+    production_quantity: Mapped[float | None] = mapped_column(Float, nullable=True)
+    production_unit: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    machine_observations: Mapped[list[dict]] = mapped_column(JSONB, nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    factory: Mapped[Factory] = relationship(back_populates="weekly_observations")
 
 
 class OptimizationResult(Base):

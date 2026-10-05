@@ -3,7 +3,11 @@ from uuid import uuid4
 import pytest
 
 from app.models.schema import ProcessType
-from app.schemas.pydantic_schemas import CalibratedMachineDTO, MachineDTO
+from app.schemas.pydantic_schemas import (
+    CalibratedMachineDTO,
+    MachineDTO,
+    WeeklyObservationCreate,
+)
 from app.services.calibration_engine import calibrate_factory_twin
 from app.services.scheduler_service import optimize_shift_schedule
 
@@ -16,6 +20,58 @@ def test_calibration_recovers_known_duty_cycle() -> None:
 
     assert duty_cycles[str(machine_id)] == pytest.approx(0.6, abs=1e-4)
     assert error_pct < 1e-5
+
+
+def test_weekly_calibration_respects_reported_machine_downtime() -> None:
+    machine_id = uuid4()
+    machines = [MachineDTO(id=machine_id, name="Motor A", rated_kw=10)]
+
+    duty_cycles, error_pct = calibrate_factory_twin(
+        machines,
+        actual_bill_kwh=360,
+        total_hours=72,
+        duty_cycle_bounds=[(0.0, 0.5)],
+    )
+
+    assert duty_cycles[str(machine_id)] == pytest.approx(0.5, abs=1e-4)
+    assert error_pct < 1e-5
+
+
+def test_weekly_calibration_allows_a_reported_machine_to_be_down() -> None:
+    machine_id = uuid4()
+    machines = [MachineDTO(id=machine_id, name="Motor A", rated_kw=10)]
+
+    duty_cycles, error_pct = calibrate_factory_twin(
+        machines,
+        actual_bill_kwh=0.1,
+        total_hours=168,
+        duty_cycle_bounds=[(0.0, 0.0)],
+    )
+
+    assert duty_cycles[str(machine_id)] == 0
+    assert error_pct == pytest.approx(100)
+
+
+def test_weekly_observation_requires_monday_and_complete_production_pair() -> None:
+    machine_id = uuid4()
+    base = {
+        "week_start": "2026-10-05",
+        "hours_observed": 168,
+        "total_kwh": 1200,
+        "machine_observations": [
+            {
+                "machine_id": str(machine_id),
+                "status": "operational",
+                "downtime_hours": 0,
+            }
+        ],
+    }
+
+    assert WeeklyObservationCreate.model_validate(base).week_start.isoformat() == "2026-10-05"
+    with pytest.raises(ValueError, match="Monday"):
+        WeeklyObservationCreate.model_validate({**base, "week_start": "2026-10-06"})
+    with pytest.raises(ValueError, match="provided together"):
+        WeeklyObservationCreate.model_validate({**base, "production_quantity": 50})
 
 
 def test_scheduler_moves_runtime_to_cheaper_hours() -> None:
@@ -57,3 +113,19 @@ def test_scheduler_rejects_capacity_below_machine_load() -> None:
 
     with pytest.raises(ValueError, match="No feasible operating schedule"):
         optimize_shift_schedule([machine], tariffs, peak_demand_capacity_kw=9)
+
+
+def test_scheduler_accepts_machine_calibrated_to_zero_duty() -> None:
+    machine = CalibratedMachineDTO(
+        id=uuid4(),
+        name="Offline Motor",
+        rated_kw=10,
+        max_daily_hours=8,
+        process_type=ProcessType.SHIFTABLE,
+        duty_cycle=0,
+    )
+    tariffs = {str(hour): 0.1 for hour in range(24)}
+
+    result = optimize_shift_schedule([machine], tariffs, peak_demand_capacity_kw=10)
+
+    assert sum(result.hourly_schedule[str(machine.id)]) == 0

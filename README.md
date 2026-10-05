@@ -19,7 +19,7 @@ The calibrated twin then powers four modules:
 | **Optimizer** | MILP-based schedule that shifts loads to off-peak tariff windows (PuLP/CBC) |
 | **Anomaly / Benchmark** | Compares your Specific Energy Consumption (SEC) against BEE benchmarks and anonymous cluster peers |
 | **Compliance** | Auto-generates DPR, ADEETIE loan pre-application, PAT audit trail, and CBAM carbon footprint |
-| **Voice Alerts** | Daily WhatsApp + voice call to supervisor in Hindi / Marathi / Gujarati via Twilio |
+| **Voice Alerts** | Operator-triggered supervisor notifications via Twilio; weekly reported issues require explicit operator action |
 
 ---
 
@@ -42,6 +42,8 @@ MDM_SMETwin/
 │   │   ├── benchmark_service.py   # Federated cluster benchmarking
 │   │   └── compliance_service.py  # DPR / ADEETIE / CBAM generator
 │   └── main.py                    # FastAPI app + CORS
+├── scripts/
+│   └── seed_demo.py                # Idempotent synthetic demo-data preset
 ├── migrations/
 │   └── versions/
 │       ├── 0001_initial_schema.py
@@ -104,6 +106,9 @@ createdb sme_twin
 
 # Run migrations
 .venv/Scripts/alembic.exe upgrade head
+
+# Optional: insert the demo presentation dataset
+.venv/Scripts/python.exe -m scripts.seed_demo
 ```
 
 ### 5. Start the Backend
@@ -134,7 +139,15 @@ uvicorn app.main:app --host 0.0.0.0 --port $PORT
 
 In the app service variables, set `DATABASE_URL` to a reference to the PostgreSQL service's `DATABASE_URL` (for example, `${{Postgres.DATABASE_URL}}`, replacing `Postgres` with the exact database service name). The app converts Railway's standard `postgres://` or `postgresql://` URL to the `postgresql+asyncpg://` driver URL expected by SQLAlchemy. Keep credentials in Railway variables, never in Git.
 
-Before using the app, run `alembic upgrade head` once with the Railway app service's variables so the database schema exists. In Railway, use the service's shell/run command with the same environment, or configure a pre-deploy migration command if available for your plan. Then deploy and confirm `/api/v1/health` returns `{"status":"ok"}`. Add `ENVIRONMENT=production`; configure `GEMINI_API_KEY` only if bill OCR is needed and Twilio variables only if notifications are needed.
+Before using the app, run `alembic upgrade head` once with the Railway app service's variables so the database schema exists, including migration `0003_add_weekly_observations`. In Railway, use the service's shell/run command with the same environment, or configure a pre-deploy migration command if available for your plan. Then deploy and confirm `/api/v1/health` returns `{"status":"ok"}`. Add `ENVIRONMENT=production`; configure `GEMINI_API_KEY` only if bill OCR is needed and Twilio variables only if notifications are needed.
+
+After deploying the code and migrations, run `python -m scripts.seed_demo` once from the Railway app service shell using the same `DATABASE_URL`. This creates a saved factory named `DEMO — Synthetic Shree Ganesh Textiles`, five machines, one synthetic monthly bill, three synthetic weekly observations with calibration history, and an optimizer result. The records are illustrative—not measured factory data. The command is safe to repeat: if the preset factory already exists, it does not modify the database. Its placeholder phone number is intentionally unusable for supervisor calls.
+
+### Weekly twin calibration
+
+On the Digital Twin page, saved factories can record one weekly observation per week: the Monday start date, represented hours, aggregate energy, optional production quantity/unit, each registered machine's reported state and downtime, and optional notes. The backend persists the observation and a linked recalibration together. Machine downtime constrains the estimated duty cycle; the aggregate energy total cannot uniquely identify each machine's actual use. The fit residual is not an independent accuracy score, and the workflow does not use live sensors or automatically detect equipment faults. Reported issues can be sent to a registered supervisor only after the operator explicitly presses the call button; this requires Twilio voice configuration.
+
+Weekly observations require PostgreSQL and `alembic upgrade head`. Production quantity is stored as context and is not yet used to calculate specific energy consumption (SEC).
 
 ---
 
@@ -152,6 +165,8 @@ Before using the app, run `alembic upgrade head` once with the Railway app servi
 | POST | `/api/v1/bill/upload` | Upload bill image (OCR extraction) |
 | GET | `/api/v1/factory/{id}/calibration` | Latest calibration result |
 | POST | `/api/v1/twin/calibrate/{id}` | Run twin calibration |
+| GET | `/api/v1/factory/{id}/weekly-observations` | List saved weekly observations and their calibration results |
+| POST | `/api/v1/factory/{id}/weekly-observations` | Save a weekly observation and recalibrate the twin |
 | GET | `/api/v1/factory/{id}/schedule` | Latest optimization result |
 | POST | `/api/v1/twin/optimize/{id}` | Run MILP schedule optimizer |
 | GET | `/api/v1/benchmark/cluster?sector=textile` | Cluster benchmark data |
